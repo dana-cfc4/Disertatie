@@ -24,13 +24,21 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import SignUp from "./SignUp";
 import Logout from "@mui/icons-material/Logout";
+import SearchProduct from "./SearchProduct";
 import { useAuth } from "../Utils/context";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../store/actions/users";
 import { setFavorites } from "../store/actions/favorites";
 import { setCarts } from "../store/actions/shoppingCarts";
+import { setProducts } from "../store/actions/products";
+import { setCategories } from "../store/actions/categories";
+import { setSubCategories } from "../store/actions/subcategories";
+import { setSubSubCategories } from "../store/actions/subsubcategories";
+import { setBrands } from "../store/actions/brands";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+   const navigate = useNavigate();
   const [openRegisterModal, setOpenRegisterModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElLogout, setAnchorElLogout] = useState(null);
@@ -85,9 +93,29 @@ const Header = () => {
   const selectCarts = (state) => state.shoppingCarts;
   const { carts } = useSelector(selectCarts);
 
+   const selectProducts = (state) => state.products;
+  const { products } = useSelector(selectProducts);
+
+  const selectCategories = (state) => state.categories;
+  const { categories } = useSelector(selectCategories);
+  
+  const selectSubCategories = (state) => state.subcategories;
+  const { subcategories } = useSelector(selectSubCategories);
+  
+  const selectSubSubCategories = (state) => state.subsubcategories;
+  const { subsubcategories } = useSelector(selectSubSubCategories);
+
+  const selectBrands = (state) => state.brands;
+  const { brands } = useSelector(selectBrands);
+
   useEffect(() => {
     dispatch(setFavorites("http://localhost:8080/favorites"));
     dispatch(setCarts("http://localhost:8080/shoppingCart"));
+    dispatch(setProducts("http://localhost:8080/products"));
+    dispatch(setCategories("http://localhost:8080/categories"));
+    dispatch(setSubCategories("http://localhost:8080/subcategories"));
+    dispatch(setSubSubCategories("http://localhost:8080/subsubcategories"));
+    dispatch(setBrands("http://localhost:8080/brands"));
   }, []);
 
 
@@ -107,6 +135,15 @@ const Header = () => {
     return nrProducts
   };
 
+  const selectProdus = (selected) => {
+    console.log(selected,"Selected")
+    if (products.filter(product => product.denumire === selected).length > 0) {
+      const filteredProducts = products.find(product => product.denumire === selected)
+      if(filteredProducts)
+      navigate(`/produse/${filteredProducts._id}`);
+    }
+  }
+
   const id = open ? "simple-popover" : undefined;
   return (
     <Grid item sx={headerStyle}>
@@ -123,7 +160,7 @@ const Header = () => {
         >
           <Toolbar>
             <img src={logoNou} height="70px" alt="logo"></img>
-            <Search>
+            {/* <Search>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -131,7 +168,8 @@ const Header = () => {
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
               />
-            </Search>
+            </Search> */}
+            <SearchProduct selectProdus={selectProdus} products={products} categories={categories} subcategories={subcategories} subsubcategories={subsubcategories} brands={brands}/>
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "flex", md: "flex" } }}>
               <Popover
