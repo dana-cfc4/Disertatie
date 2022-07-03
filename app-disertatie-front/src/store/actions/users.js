@@ -57,3 +57,22 @@ export function signOut() {
     type: "SIGN_OUT",
   };
 }
+
+export function editUser(url, body) {
+  return (dispatch) => {
+    return fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        dispatch({
+          type: "EDIT_USER",
+          user: result.editedUser,
+        });
+      });
+  };
+}

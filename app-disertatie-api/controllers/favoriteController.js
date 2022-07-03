@@ -22,7 +22,7 @@ addFavorite = async (req, res) => {
     const body = req.body;
     if (body !== null) {
       const favorite = new Favorite(body);
-
+      
       await favorite.save();
       return res.status(201).json({
         success: true,

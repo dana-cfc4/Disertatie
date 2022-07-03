@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../Utils/context";
 import { setProducts } from "../store/actions/products";
@@ -10,19 +9,15 @@ import Modal from "@mui/material/Modal";
 import Divider from "@mui/material/Divider";
 import CardActions from "@mui/material/CardActions";
 import Card from "@mui/material/Card";
-import Paper from "@mui/material/Paper";
-import Tooltip from "@mui/material/Tooltip";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import FormGroup from "@mui/material/FormGroup";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
 import List from "@mui/material/List";
-import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import ListItem from "@mui/material/ListItem";
+import CardMedia from "@mui/material/CardMedia";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
@@ -33,7 +28,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { setCarts, setCartsNoUser } from "../store/actions/shoppingCarts";
-import { setUsers } from "../store/actions/users";
+import { setUsers, editUser } from "../store/actions/users";
 import "../styles.css";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -41,10 +36,18 @@ import StepLabel from "@mui/material/StepLabel";
 import Checkbox from "@mui/material/Checkbox";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { addOrder } from "../store/actions/orders";
+import { addOrder, setOrders } from "../store/actions/orders";
+import { useNavigate } from "react-router-dom";
+import {
+  editCart,
+  editCartNoUser
+} from "../store/actions/shoppingCarts";
 import "../styles.css";
+import * as emailjs from 'emailjs-com'
+import { months } from "../constant";
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
   const auth = useAuth();
@@ -58,6 +61,9 @@ const Checkout = () => {
 
   const selectCarts = (state) => state.shoppingCarts;
   const { carts } = useSelector(selectCarts);
+
+  const selectOrders = (state) => state.orders;
+  const { orders } = useSelector(selectOrders);
 
   const getCartContent = () => {
     let nrProducts = 0;
@@ -102,18 +108,28 @@ const Checkout = () => {
   };
 
   const aplicaCodPromotional = () => {
-    if (promoCode !== "dana") setPromoCodeFinal("nueok");
-    else setPromoCodeFinal("eok");
+    if (promoCode !== "PR" + auth._id) {
+      setPromoCodeFinal("nueok")
+    }
+    else {
+      setPromoCodeFinal("eok")
+      if (isPuncteFidelitate) {
+        setIsPuncteFidelitate(false)
+        setMesajPuncteFidelitate('Deja ai aplicat un discount')
+      }
+    };
   };
 
   const getCostLivrare = () => {
-    if (getCartContent()[1] > 200) return 0;
+    if (getCartContent()[1] >= 200) return 0;
     else return 15;
   };
 
   const getDiscount = () => {
     if (promoCodeFinal === "eok")
       return (0.1 * (getCartContent()[1] + getCostLivrare())).toFixed(2);
+    else if (isPuncteFidelitate)
+      return (0.15 * (getCartContent()[1] + getCostLivrare())).toFixed(2);
     else return 0;
   };
 
@@ -188,6 +204,8 @@ const Checkout = () => {
   const { usersList } = useSelector(selectUsers);
 
   const [isDefaultAddress, setIsDefaultAddress] = useState(false);
+  const [isPuncteFidelitate, setIsPuncteFidelitate] = useState(false);
+  const [mesajPuncteFidelitate, setMesajPuncteFidelitate] = useState('');
 
   const changeIsDefaultAddress = (event) => {
     setIsDefaultAddress(event.target.checked);
@@ -221,6 +239,21 @@ const Checkout = () => {
     }
   };
 
+  const changeIsPuncteFidelitate = (event) => {
+    const currentUserPuncte = usersList.find(user => user._id === auth._id).puncteFidelitate
+    if (currentUserPuncte >= 50) {
+      if (event.target.checked) {
+        if (promoCodeFinal !== 'nue')
+          setPromoCodeFinal('altul')
+        setIsPuncteFidelitate(true)
+      }
+      else {
+        setIsPuncteFidelitate(false)
+      }
+    }
+    else setMesajPuncteFidelitate('Nu ai suficiente puncte de fidelitate')
+  }
+
   const [isDefaultData, setIsDefaultData] = useState(false);
 
   const changeIsDefaultData = (event) => {
@@ -245,6 +278,7 @@ const Checkout = () => {
     }
   };
 
+  const [promoCodeGiven, setPromoCodeGiven] = useState('')
   const getCurrentDate = () => {
     const currentDate = new Date();
     currentDate.setDate(currentDate.getDate() + 3);
@@ -299,7 +333,7 @@ const Checkout = () => {
     }
     const cardElement = elements.getElement(CardElement);
     const { error, token } = await stripe.createToken(cardElement);
-    console.log(token, "toen");
+
     if (!error) {
       axios
         .post("http://localhost:8080/api/stripe/charge", {
@@ -348,14 +382,191 @@ const Checkout = () => {
       } else {
         dispatch(addOrder("http://localhost:8080/orders", currentOrder));
       }
+
+      if (auth && auth._id) {
+        const currentUserData = usersList.find(user => user._id === auth._id)
+        let valoarePuncte = 0
+        if (parseInt(getValoareTotala()) >= 150 && parseInt(getValoareTotala()) < 300)
+          valoarePuncte = 10
+        else if (parseInt(getValoareTotala()) >= 300 && parseInt(getValoareTotala()) < 500)
+          valoarePuncte = 20
+        else if (parseInt(getValoareTotala()) >= 500)
+          valoarePuncte = 30
+        setPromoCodeGiven('PR' + auth._id)
+        const takenPoints = currentUserData.puncteFidelitate >= 50 ? 50 : 0
+        const updatedCurrentUserData = { ...currentUserData, puncteFidelitate: parseInt(currentUserData.puncteFidelitate) + valoarePuncte - takenPoints }
+        dispatch(editUser(`http://localhost:8080/users/${auth._id}`,
+          updatedCurrentUserData))
+        const currentUserCart = getCurrentCart()
+        currentUserCart[0].produse.length = 0
+        dispatch(
+          editCart(
+            `http://localhost:8080/shoppingCart/${currentUserCart[0]._id}`,
+            currentUserCart[0]
+          )
+        );
+      }
+      else {
+        currentSessionCarts[0].produse.length = 0
+        dispatch(editCartNoUser(currentSessionCarts));
+      }
+      setOpenThankYouModal(true)
     }
-    
   };
+
+  const [openThankYouModal, setOpenThankYouModal] = useState(false);
+
+  const getCorrectFormatOfDate = (date) => {
+    const dateConverted = new Date(date);
+    const day = dateConverted.getDate().toString();
+    const correctDay = day.length === 1 ? "0" + day : day;
+    const month = dateConverted.getMonth().toString();
+    const correctMonth = months[month];
+    const year = dateConverted.getFullYear();
+    return correctDay + " " + correctMonth.slice(0, 3) + ". " + year;
+  };
+
+  const handleCloseThankYouModal = () => {
+    const currentUser = usersList.find(user => user._id === auth._id)
+    const userOrders = orders.filter(order => order.idUtilizator === auth._id)
+    const currentUserLastOrder = userOrders[userOrders.length - 1]
+    const produseComandate = currentUserLastOrder.cosCumparaturi.produse
+    const to_name = currentUser.lastName + ' ' + currentUser.firstName
+    if (auth) {
+      let emailObject = {
+        to_name: to_name,
+        id_comanda: currentUserLastOrder._id,
+        data_comanda: getCorrectFormatOfDate(currentUserLastOrder.data),
+        strada: strada,
+        nr_strada: nrStrada,
+        numar_telefon: nrTel,
+        subtotal: currentUserLastOrder.valoareProduse,
+        taxa_livrare: currentUserLastOrder.taxaLivrare,
+        discount: currentUserLastOrder.discount,
+        val_totala: currentUserLastOrder.valoareProduse + currentUserLastOrder.taxaLivrare - currentUserLastOrder.discount
+      }
+
+      if (produseComandate[0]) {
+        const prod = products.find(produs => produs._id === produseComandate[0].idProdus)
+        emailObject = {
+          ...emailObject, produs1_denumire: prod.denumire,
+          produs1_culoare: produseComandate[0].culoare,
+          produs1_cantitate: produseComandate[0].cantitate
+        }
+      }
+
+      if (produseComandate[1]) {
+        const prod = products.find(produs => produs._id === produseComandate[1].idProdus)
+        emailObject = {
+          ...emailObject, produs2_denumire: prod.denumire,
+          produs2_culoare: produseComandate[1].culoare,
+          produs2_cantitate: produseComandate[1].cantitate
+        }
+      }
+
+      if (produseComandate[2]) {
+        const prod = products.find(produs => produs._id === produseComandate[2].idProdus)
+        emailObject = {
+          ...emailObject, produs3_denumire: prod.denumire,
+          produs3_culoare: produseComandate[2].culoare,
+          produs3_cantitate: produseComandate[2].cantitate
+        }
+      }
+
+      if (produseComandate[3]) {
+        const prod = products.find(produs => produs._id === produseComandate[3].idProdus)
+        emailObject = {
+          ...emailObject, produs4_denumire: prod.denumire,
+          produs4_culoare: produseComandate[3].culoare,
+          produs4_cantitate: produseComandate[3].cantitate
+        }
+      }
+
+      if (produseComandate[4]) {
+        const prod = products.find(produs => produs._id === produseComandate[4].idProdus)
+        emailObject = {
+          ...emailObject, produs5_denumire: prod.denumire,
+          produs5_culoare: produseComandate[4].culoare,
+          produs5_cantitate: produseComandate[4].cantitate
+        }
+      }
+
+      if (produseComandate[5]) {
+        const prod = products.find(produs => produs._id === produseComandate[5].idProdus)
+        emailObject = {
+          ...emailObject, produs6_denumire: prod.denumire,
+          produs6_culoare: produseComandate[5].culoare,
+          produs6_cantitate: produseComandate[5].cantitate
+        }
+      }
+
+      if (produseComandate[6]) {
+        const prod = products.find(produs => produs._id === produseComandate[6].idProdus)
+        emailObject = {
+          ...emailObject, produs7_denumire: prod.denumire,
+          produs7_culoare: produseComandate[6].culoare,
+          produs7_cantitate: produseComandate[6].cantitate
+        }
+      }
+
+      if (produseComandate[7]) {
+        const prod = products.find(produs => produs._id === produseComandate[7].idProdus)
+        emailObject = {
+          ...emailObject, produs8_denumire: prod.denumire,
+          produs8_culoare: produseComandate[7].culoare,
+          produs8_cantitate: produseComandate[7].cantitate
+        }
+      }
+
+      if (produseComandate[8]) {
+        const prod = products.find(produs => produs._id === produseComandate[8].idProdus)
+        emailObject = {
+          ...emailObject, produs9_denumire: prod.denumire,
+          produs9_culoare: produseComandate[8].culoare,
+          produs9_cantitate: produseComandate[8].cantitate
+        }
+      }
+
+      if (produseComandate[9]) {
+        const prod = products.find(produs => produs._id === produseComandate[9].idProdus)
+        emailObject = {
+          ...emailObject, produs10_denumire: prod.denumire,
+          produs10_culoare: produseComandate[9].culoare,
+          produs10_cantitate: produseComandate[9].cantitate
+        }
+      }
+
+      emailjs.send('service_iirkagh', 'template_5cfinax',
+        emailObject, 'Ak9QRoefpgzrj3nmE')
+        .then((result) => {
+          console.log('email sent successfully');
+        }, (error) => {
+          alert('error sending email');
+        });
+    }
+    setOpenThankYouModal(false);
+    navigate(`/cosdecumparaturi`);
+  };
+
+  const getLastOrder = () => {
+    if (auth) {
+      const currentUser = usersList.find(user => user._id === auth._id)
+      const userOrders = orders.filter(order => order.idUtilizator === auth._id)
+      const currentUserLastOrder = userOrders[userOrders.length - 1]
+      return currentUserLastOrder
+    }
+    else return {}
+  }
+  const vizualizeazaComanda = () => {
+    const idComanda = getLastOrder() ? getLastOrder()._id : ''
+    navigate(`/comenzilemele/${idComanda}`);
+  }
 
   useEffect(() => {
     dispatch(setProducts("http://localhost:8080/products"));
     dispatch(setCarts("http://localhost:8080/shoppingCart"));
     dispatch(setUsers("http://localhost:8080/users"));
+    dispatch(setOrders("http://localhost:8080/orders"));
   }, []);
 
   return (
@@ -374,7 +585,7 @@ const Checkout = () => {
         </Typography>
         <Grid sx={{ marginLeft: "20px", marginTop: "30px" }}>
           {getCurrentCart().length > 0 &&
-          getCurrentCart()[0].produse.length > 0 ? (
+            getCurrentCart()[0].produse.length > 0 ? (
             <div
               style={{
                 display: "flex",
@@ -901,15 +1112,118 @@ const Checkout = () => {
                       Aplica cod promotional
                     </Button>
                   </CardActions>
-                  {promoCodeFinal !== "eok" && promoCodeFinal !== "nue" ? (
+                  {promoCodeFinal !== "eok" && promoCodeFinal !== "nue" && promoCodeFinal !== 'altul' ? (
                     <Typography sx={{ color: "red" }}>
                       Acest cod promotional nu exista
                     </Typography>
                   ) : null}
+                  {promoCodeFinal === 'altul' ? (
+                    <Typography sx={{ color: "red" }}>
+                      Ai aplicat deja un discount
+                    </Typography>
+                  ) : null}
                 </Card>
+
+                {auth ?
+                  <Card sx={{ minWidth: 280, marginTop: "40px" }}>
+                    <CardContent>
+                      <Typography sx={{ fontWeight: 700 }}>Detii {usersList.find(user => user._id === auth._id) ? usersList.find(user => user._id === auth._id).puncteFidelitate : '0'} puncte de fidelitate</Typography>
+                      <FormGroup
+                        sx={{ alignItems: "center", marginTop: "15px" }}
+                      >
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              label="Foloseste puncte fidelitate"
+                              checked={isPuncteFidelitate}
+                              onChange={changeIsPuncteFidelitate}
+                              inputProps={{ "aria-label": "controlled" }}
+                            />
+                          }
+                          label="Foloseste puncte fidelitate"
+                        />
+                      </FormGroup>
+                    </CardContent>
+                    <Alert
+                      sx={{ marginBottom: "20px", width: "fit-content" }}
+                      severity="info"
+                    >
+                      50 de puncte de fidelitate iti ofera un discount de 15%
+                    </Alert>
+                    {!mesajPuncteFidelitate ? (
+                      <Typography sx={{ color: "red" }}>
+                        {mesajPuncteFidelitate}
+                      </Typography>
+                    ) : null}
+                  </Card> : null}
               </div>
             </div>
           ) : null}
+          <Modal
+            sx={{ overflow: "scroll" }}
+            open={openThankYouModal}
+            onClose={handleCloseThankYouModal}
+          >
+            <Box sx={boxStyle}>
+              <Grid sx={{
+                justifyContent: 'center',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }} container>
+                <Card
+                  sx={{
+                    border: "none",
+                    boxShadow: "none",
+                    marginTop: "10px",
+                    marginRight: "10px",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    width="300"
+                    image='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgGa_nOhFNJnWdIZsAMoUCyTD-18X8KYEpTw&usqp=CAU'
+                    alt={'Confirma comanda'}
+                    sx={{
+                      display: "inline - block",
+                      position: "relative",
+                      margin: 'auto',
+                      height: "250px",
+                      width: "300px"
+                    }}
+                  />
+                  <CardContent
+                    sx={{ textAlign: "justify", marginLeft: "7px" }}
+                  >
+                    <Typography sx={{ fontWeight: "700", fontSize: "27px", textAlign: 'center' }}>
+                      Multumim pentru comanda, {prenume}!
+                    </Typography>
+                    <Typography sx={{ fontSize: '20px', marginTop: '55px' }}>Comanda cu numarul {<strong>#{getLastOrder() ? getLastOrder()._id : ''}</strong>} a fost inregistrata cu succes.</Typography>
+
+                    <Typography sx={{ fontSize: '20px', marginTop: '25px' }}>Un email de confirmare a fost transmis catre {email}.</Typography>
+                    {auth && orders.filter(comanda => comanda.idUtilizator === auth._id).length % 5 === 0 ? <Typography sx={{ fontSize: '20px', marginTop: '25px' }}>Codul tau promotional este: {<strong>PR{auth._id}</strong>}</Typography> : null}
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: '60px' }}>
+                      <Button
+                        variant="contained"
+                        sx={styles}
+                        onClick={vizualizeazaComanda}
+                      >
+                        Vizualizeaza comanda
+                      </Button>
+                      <Button
+                        variant="contained"
+                        sx={styles}
+                        onClick={handleCloseThankYouModal}
+                      >
+                        Inapoi la cosul tau
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Box>
+          </Modal>
         </Grid>
       </Grid>
     </>
@@ -979,6 +1293,22 @@ const options = {
       color: "#fa755a",
       iconColor: "#fa755a",
     },
+  },
+};
+
+const boxStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  height: "80%",
+  transform: "translate(-50%, -50%)",
+  width: "80%",
+  bgcolor: "background.paper",
+  border: "1.5px solid #000",
+  boxShadow: 24,
+  p: 4,
+  "@media (min-width: 2100px)": {
+    width: "45%",
   },
 };
 

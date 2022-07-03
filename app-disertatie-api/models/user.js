@@ -20,6 +20,7 @@ const UserSchema = new Schema({
   scara: { type: String },
   apartmentNumber: { type: Number },
   etaj: { type: String },
+  puncteFidelitate: {type: Number}
 });
 
 module.exports = mongoose.model('User', UserSchema);

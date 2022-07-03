@@ -153,8 +153,8 @@ const CategoriesMenu = () => {
                 horizontal: "center",
               }}
             >
-              <Paper  sx={paperStyle}>
-                <Grid container sx={{ justifyContent: "center"}}>
+              <Paper sx={paperStyle}>
+                <Grid container sx={{ justifyContent: "center" }}>
                   {subcategories
                     .filter(
                       (subcategory) =>

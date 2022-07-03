@@ -10,12 +10,12 @@ export default function addFavorite(state = initialState, action) {
         ...state,
         favorites: [
           ...state.favorites,
-          { ...action.favorite, id: state.favorites.length + 1 },
+         action.favorite,
         ],
       };
     case "SET_FAVORITES":
       return { ...state, favorites: action.favorites };
-      case "DELETE_FAVORITE":
+    case "DELETE_FAVORITE":
       return {
         ...state,
         favorites: state.favorites.filter(

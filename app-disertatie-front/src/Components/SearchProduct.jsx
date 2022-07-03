@@ -1,24 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Awesomplete from "awesomplete";
 import "../styles/awesomplete.css";
+import { useDispatch, useSelector } from "react-redux";
+import { setProducts } from "../store/actions/products";
+import { setCategories } from "../store/actions/categories";
+import { setSubCategories } from "../store/actions/subcategories";
+import { setSubSubCategories } from "../store/actions/subsubcategories";
+import { setBrands } from "../store/actions/brands";
 <script src="awesomplete.js"></script>;
 
 const SearchProduct = ({
   selectProdus,
-  products,
-  categories,
-  subcategories,
-  subsubcategories,
-  brands,
+  productss,
+  categoriess,
+  subcategoriess,
+  subsubcategoriess,
+  brandss,
 }) => {
   let input;
-  document.createDocumentFragment()
-  document.createDocumentFragment();
+  const selectProducts = (state) => state.products;
+  const { products } = useSelector(selectProducts);
+
+  const selectCategories = (state) => state.categories;
+  const { categories } = useSelector(selectCategories);
+
+  const selectSubCategories = (state) => state.subcategories;
+  const { subcategories } = useSelector(selectSubCategories);
+
+  const selectSubSubCategories = (state) => state.subsubcategories;
+  const { subsubcategories } = useSelector(selectSubSubCategories);
+
+  const selectBrands = (state) => state.brands;
+  const { brands } = useSelector(selectBrands);
 
   const getProductNames = () => {
     const productNames = products.map((product) => product.denumire);
     return productNames;
   };
+
+  const prevProducts = usePrevious(productss)
 
   const getBrandNames = () => {
     const brandNames = brands.map((brand) => brand.nume);
@@ -30,16 +50,16 @@ const SearchProduct = ({
     return categoriesNames;
   };
 
-   const getSubCategoriesNames = () => {
-     const subcategoriesNames = subcategories.map((subcategorie) => subcategorie.nume);
-     return subcategoriesNames;
-   };
-  
-   const getSubSubCategoriesNames = () => {
-     const subsubcategoriesNames = subsubcategories.map((subsubcategorie) => subsubcategorie.nume);
-     return subsubcategoriesNames;
-   };
-  
+  const getSubCategoriesNames = () => {
+    const subcategoriesNames = subcategories.map((subcategorie) => subcategorie.nume);
+    return subcategoriesNames;
+  };
+
+  const getSubSubCategoriesNames = () => {
+    const subsubcategoriesNames = subsubcategories.map((subsubcategorie) => subsubcategorie.nume);
+    return subsubcategoriesNames;
+  };
+
   const productsArray = products.map((produs) => [
     produs.denumire,
     produs.denumire,
@@ -60,64 +80,83 @@ const SearchProduct = ({
     subcategory.nume,
   ]);
 
-   const subsubcategoriesArray = subsubcategories.map((subsubcategory) => [
-     subsubcategory.nume,
-     subsubcategory.nume,
-   ]);
+  const subsubcategoriesArray = subsubcategories.map((subsubcategory) => [
+    subsubcategory.nume,
+    subsubcategory.nume,
+  ]);
 
   let finalArray = []
-  finalArray = [...finalArray, ...productsArray, ...brandArray, ...categoriesArray, ...subcategoriesArray, ...subsubcategoriesArray]
+  finalArray = [...finalArray, ...productsArray, ...categoriesArray, ...subcategoriesArray, ...brandArray, ...subsubcategoriesArray]
+
   const allProducts = Object.fromEntries(finalArray);
 
   function createCountryItem(suggestion) {
-    let li = document.createElement("li");
-    const product = allProducts[suggestion];
 
-    li.classList.add("suggestion");
+    const productSuggestion = allProducts[suggestion];
+    if (productSuggestion) {
+      let li = document.createElement("li");
+      const productToDisplay = products.find(product => product.denumire === productSuggestion)
 
-    li.innerHTML =
-      // '<span class="sprite-flag ' +
-      // product +
-      // '">
-      "</span > " +
-      "<strong>" +
-      suggestion +
-      "</strong>" +
-      '<small class="suggestion-details">' +
-      "Country " +
-      "</small>";
+      let brandName = ''
+      if (productToDisplay) {
+        brandName = brands.find(brand => brand._id === productToDisplay.idBrand) ?
+          brands.find(brand => brand._id === productToDisplay.idBrand).nume : ''
+      }
+      if (productToDisplay)
+        li.classList.add("suggestion");
 
-    return li;
+      if (productToDisplay)
+        li.innerHTML =
+          '<div class="divStyle">' +
+          '<img src="' +
+          Object.values(productToDisplay.imagini[0])[0][0]
+          + '"width=\"70px\" height=\"70px\">' +
+          '<div class="divStyle2">' +
+          "<strong>" +
+          suggestion +
+          "</strong>" +
+          '<small class="suggestion-details">' +
+          brandName +
+          "</small>" +
+          "</div>" +
+          "</div>";
+      else li.innerHTML =
+        "<strong>" +
+        suggestion +
+        "</strong>"
+      return li
+    }
   }
 
   function createSuggestionItem(suggestion, input) {
-    console.log(allProducts[suggestion], "suggestion");
     let li;
 
     if (!suggestion) return;
-  
+
     if (allProducts[suggestion]) {
       li = createCountryItem(suggestion, input);
     }
-
     return li;
   }
 
   function selectHandler(event) {
     const selection = event.text.value;
     selectProdus(selection);
-    input.text = ''
   }
 
   function initProductSearch() {
+    document.createDocumentFragment()
+    document.createDocumentFragment();
+
     let list = [];
     input = document.getElementById("csirt-search");
     const productNames = getProductNames();
-    const brandNames = getBrandNames();
     const categoriesNames = getCategoriesNames();
     const subcategoriesNames = getSubCategoriesNames();
     const subsubcategoriesNames = getSubSubCategoriesNames();
-    list = [...list, ...productNames, ...categoriesNames, ...subcategoriesNames];
+    const brandNames = getBrandNames();
+
+    list = [...list, ...productNames, ...categoriesNames, ...subcategoriesNames, ...brandNames, ...subsubcategoriesNames];
 
     let awesomplete = new Awesomplete(input, {
       minChars: 1,
@@ -131,7 +170,20 @@ const SearchProduct = ({
     input.addEventListener("awesomplete-selectcomplete", selectHandler);
   }
 
-  useEffect(() => initProductSearch(), [brands]);
+  function usePrevious(value) {
+    const ref = useRef();
+
+    useEffect(() => {
+      ref.current = value;
+    }, [productss]);
+
+    return ref.current;
+  }
+
+  useEffect(() => {
+    if (JSON.stringify(prevProducts) !== JSON.stringify(productss))
+      initProductSearch()
+  }, [productss]);
 
   return (
     <input

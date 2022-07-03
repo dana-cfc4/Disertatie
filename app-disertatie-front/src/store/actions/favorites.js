@@ -29,6 +29,7 @@ export function addFavorite(url, body) {
           type: "ADD_FAVORITE",
           favorite: result.addedFavorite,
         });
+
       });
   };
 }

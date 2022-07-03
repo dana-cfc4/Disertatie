@@ -10,14 +10,14 @@ export default function addCart(state = initialState, action) {
         ...state,
         carts: [...state.carts, { ...action.cart, id: state.carts.length + 1 }],
       };
-      case "SET_CARTS":
+    case "SET_CARTS":
       return { ...state, carts: action.carts };
     case "EDIT_CART":
       return {
         ...state,
-        carts: state.carts.map((cart) =>
-          cart._id === action.cart._id ? action.cart : cart
-        ),
+        carts: state.carts.map((cart) => {
+          return cart._id === action.cart?._id ? action.cart : cart
+        }),
       };
     case "DELETE_CART":
       return {

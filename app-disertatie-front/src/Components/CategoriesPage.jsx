@@ -16,7 +16,7 @@ import Menu from "@mui/material/Menu";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import Button from "@mui/material/Button";
-import {CardActionArea} from "@mui/material";
+import { CardActionArea } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -118,6 +118,12 @@ const CategoriesPage = () => {
     setOpenRatingFilter(!openRatingFilter);
   };
 
+  const [openIngredientFilter, setOpenIngredientFilter] = useState(false);
+
+  const handleOpenIngredientFilter = () => {
+    setOpenIngredientFilter(!openIngredientFilter);
+  };
+
   const [openBestsellerFilter, setOpenBestsellerFilter] = useState(false);
 
   const handleOpenBestsellerFlter = () => {
@@ -154,11 +160,47 @@ const CategoriesPage = () => {
     setPretValue(event.target.value);
   };
 
+  const [parfumValue, setParfumValue] = useState(false);
+
+  const changeParfumValue = (event) => {
+    setParfumValue(event.target.checked);
+  };
+
+  const [parabeniValue, setParabeniValue] = useState(false);
+
+  const changeParabeniValue = (event) => {
+    setParabeniValue(event.target.checked);
+  };
+
+  const [aluminiuValue, setAluminiuValue] = useState(false);
+
+  const changeAluminiuValue = (event) => {
+    setAluminiuValue(event.target.checked);
+  };
+
+  const [talcValue, setTalcValue] = useState(false);
+
+  const changeTalcValue = (event) => {
+    setTalcValue(event.target.checked);
+  };
+
+  const [siliconValue, setSiliconValue] = useState(false);
+
+  const changeSiliconValue = (event) => {
+    setSiliconValue(event.target.checked);
+  };
+
   const [pretMinim, setPretMinim] = useState(0);
   const [pretMaxim, setPretMaxim] = useState(0);
 
   const handleChangePretMinim = (event) => {
     setPretMinim(event.target.value);
+  };
+
+  const [ingredientInputed, setIngredientInputed] = useState('');
+
+  const handleChangeIngredientInputed = (event) => {
+    setIngredientInputed(event.target.value);
   };
 
   const handleChangePretMaxim = (event) => {
@@ -315,8 +357,11 @@ const CategoriesPage = () => {
       const ratingMaxim = valoareFiltru.split("-")[1];
       return products.filter(
         (product) =>
-          getProductRating(product) > ratingMinim &&
-          getProductRating(product) <= ratingMaxim
+          parseInt(ratingMinim) === 0 ?
+            getProductRating(product) >= ratingMinim &&
+            getProductRating(product) <= ratingMaxim :
+            getProductRating(product) > ratingMinim &&
+            getProductRating(product) <= ratingMaxim
       );
     } else return products;
   };
@@ -360,14 +405,14 @@ const CategoriesPage = () => {
       });
     if (getNrReviews(product) > 0)
       return (ratingProdus / getNrReviews(product)).toFixed(1);
-      else return 0
+    else return 0
   };
 
   const getNrReviews = (product) => {
     const nrReviewsProduct = ratings.filter(
       (review) => review.idProdus === product._id
     ).length;
-     return nrReviewsProduct;
+    return nrReviewsProduct;
   };
 
   const getNrProduseCategorie = (subcategory) => {
@@ -426,16 +471,46 @@ const CategoriesPage = () => {
     )
       .filter((produs) => (brand ? produs.idBrand === brand : true))
       .filter((produs) =>
+        parfumValue ?
+          !produs.ingrediente.includes('PARFUM')
+          : true
+      )
+      .filter((produs) =>
+        parabeniValue ?
+          !produs.ingrediente.includes('PARABENI')
+          : true
+      )
+      .filter((produs) =>
+        aluminiuValue ?
+          !produs.ingrediente.includes('ALUMINIU')
+          : true
+      )
+      .filter((produs) =>
+        talcValue ?
+          !produs.ingrediente.includes('TALC')
+          : true
+      )
+      .filter((produs) =>
+        siliconValue ?
+          !produs.ingrediente.includes('SILICON')
+          : true
+      )
+      .filter((produs) =>
+        filtruIngredient && ingredientInputed ?
+          !produs.ingrediente.includes(ingredientInputed.toUpperCase())
+          : true
+      )
+      .filter((produs) =>
         checkedBestProduct
           ? produs.taguri.filter((tag) =>
-              Object.keys(tag).includes("Bestseller")
-            ).length > 0
+            Object.keys(tag).includes("Bestseller")
+          ).length > 0
           : true
       )
       .filter((produs) =>
         checkedNewProduct
           ? produs.taguri.filter((tag) => Object.keys(tag).includes("New"))
-              .length > 0
+            .length > 0
           : true
       )
       .filter((produs) => customFiltering(produs, 0))
@@ -450,8 +525,12 @@ const CategoriesPage = () => {
     });
   };
 
+  const getIngredientsFilteredProducts = (produs, optiune) => {
+    return !produs.ingrediente.includes(optiune)
+  }
+
   const addNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const favoriteWithUser = {
         idProdus: product._id,
         idUtilizator: auth._id,
@@ -468,7 +547,7 @@ const CategoriesPage = () => {
   };
 
   const deleteNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const fav = favorites.find(
         (favorite) =>
           favorite.idProdus === product._id &&
@@ -492,6 +571,12 @@ const CategoriesPage = () => {
   const hideQuicklook = (id) => {
     document.getElementById(id).style.visibility = "hidden";
   };
+
+  const [filtruIngredient, setFiltruIngredient] = useState(false)
+
+  const aplicaFiltruIngredient = () => {
+    setFiltruIngredient(!filtruIngredient)
+  }
 
   const [idForModal, setIdForModal] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -551,11 +636,12 @@ const CategoriesPage = () => {
 
   const getFavProduct = (product) => {
     if (
-      (auth &&
+      (auth && auth._id &&
         favorites
           .filter((fav) => fav.idUtilizator === auth._id)
           .map((favorite) => favorite.idProdus)
-          .includes(product._id)) ||
+          .includes(product._id))
+      ||
       (!auth &&
         currentSessionFavorites
           .map((favorite) => favorite.idProdus)
@@ -584,7 +670,7 @@ const CategoriesPage = () => {
 
   const getFavProductModal = (product) => {
     if (
-      (auth &&
+      (auth && auth._id &&
         favorites
           .filter((fav) => fav.idUtilizator === auth._id)
           .map((favorite) => favorite.idProdus)
@@ -672,37 +758,32 @@ const CategoriesPage = () => {
                 <FormControlLabel
                   value="0-25"
                   control={<Radio color="default" />}
-                  label={`< 25 lei (${
-                    filterByPret(getProduseCurente(), "0-25").length
-                  })`}
+                  label={`< 25 lei (${filterByPret(getProduseCurente(), "0-25").length
+                    })`}
                 />
                 <FormControlLabel
                   value="25-50"
                   control={<Radio color="default" />}
-                  label={`25 - 50 lei (${
-                    filterByPret(getProduseCurente(), "25-50").length
-                  })`}
+                  label={`25 - 50 lei (${filterByPret(getProduseCurente(), "25-50").length
+                    })`}
                 />
                 <FormControlLabel
                   value="50-100"
                   control={<Radio color="default" />}
-                  label={`50 - 100 lei (${
-                    filterByPret(getProduseCurente(), "50-100").length
-                  })`}
+                  label={`50 - 100 lei (${filterByPret(getProduseCurente(), "50-100").length
+                    })`}
                 />
                 <FormControlLabel
                   value="100-150"
                   control={<Radio color="default" />}
-                  label={`100 - 150 lei (${
-                    filterByPret(getProduseCurente(), "100-150").length
-                  })`}
+                  label={`100 - 150 lei (${filterByPret(getProduseCurente(), "100-150").length
+                    })`}
                 />
                 <FormControlLabel
                   value="150-1000"
                   control={<Radio color="default" />}
-                  label={`> 150 lei (${
-                    filterByPret(getProduseCurente(), "150-1000").length
-                  })`}
+                  label={`> 150 lei (${filterByPret(getProduseCurente(), "150-1000").length
+                    })`}
                 />
                 <FormControlLabel
                   value="userChoice"
@@ -869,6 +950,133 @@ const CategoriesPage = () => {
         </Collapse>
         <Divider />
 
+        <ListItemButton onClick={handleOpenIngredientFilter}>
+          <ListItemText
+            disableTypography
+            primary={
+              <Typography sx={{ fontWeight: "780", fontSize: "20px" }}>
+                Ingrediente de evitat
+              </Typography>
+            }
+          />
+          {openIngredientFilter ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openIngredientFilter} timeout="auto" unmountOnExit>
+          <FormGroup
+            sx={{
+              width: "100%",
+              maxWidth: 360,
+              marginLeft: "15px",
+              textAlign: "justify",
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="default"
+                  checked={
+                    parfumValue
+                  }
+                  onChange={
+                    changeParfumValue
+                  }
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label={`Parfum (${getProduseCurente().filter(
+                (produs) =>
+                  getIngredientsFilteredProducts(produs, 'PARFUM')
+              ).length
+                })`}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="default"
+                  checked={
+                    parabeniValue
+                  }
+                  onChange={
+                    changeParabeniValue
+                  }
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label={`Parabeni (${getProduseCurente().filter(
+                (produs) =>
+                  getIngredientsFilteredProducts(produs, 'PARABENI')
+              ).length
+                })`}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="default"
+                  checked={
+                    aluminiuValue
+                  }
+                  onChange={
+                    changeAluminiuValue
+                  }
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label={`Aluminiu (${getProduseCurente().filter(
+                (produs) =>
+                  getIngredientsFilteredProducts(produs, 'ALUMINIU')
+              ).length
+                })`}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="default"
+                  checked={
+                    talcValue
+                  }
+                  onChange={
+                    changeTalcValue
+                  }
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label={`Talc (${getProduseCurente().filter(
+                (produs) =>
+                  getIngredientsFilteredProducts(produs, 'TALC')
+              ).length
+                })`}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="default"
+                  checked={
+                    siliconValue
+                  }
+                  onChange={
+                    changeSiliconValue
+                  }
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label={`Silicon (${getProduseCurente().filter(
+                (produs) =>
+                  getIngredientsFilteredProducts(produs, 'SILICON')
+              ).length
+                })`}
+            />
+            <TextField
+              sx={{ marginTop: "10px" }}
+              label="Ingredient"
+              placeholder="Ingredient"
+              onChange={handleChangeIngredientInputed}
+            />
+            {!filtruIngredient ?
+              <Button variant="text" onClick={aplicaFiltruIngredient}>Aplica filtru</Button> :
+              <Button variant="text" onClick={aplicaFiltruIngredient}>Sterge filtru</Button>}
+          </FormGroup>
+        </Collapse>
+        <Divider />
         <ListItemButton onClick={handleOpenBrandFlter}>
           <ListItemText
             disableTypography
@@ -903,11 +1111,10 @@ const CategoriesPage = () => {
                       key={brand._id}
                       value={brand._id}
                       control={<Radio color="default" />}
-                      label={`${brand.nume} (${
-                        getProduseCurente().filter(
-                          (produs) => produs.idBrand === brand._id
-                        ).length
-                      })`}
+                      label={`${brand.nume} (${getProduseCurente().filter(
+                        (produs) => produs.idBrand === brand._id
+                      ).length
+                        })`}
                     />
                   ))}
               </RadioGroup>
@@ -953,14 +1160,13 @@ const CategoriesPage = () => {
                   inputProps={{ "aria-label": "controlled" }}
                 />
               }
-              label={`Bestsellers (${
-                getProduseCurente().filter(
-                  (produs) =>
-                    produs.taguri.filter((tag) =>
-                      Object.keys(tag).includes("Bestseller")
-                    ).length > 0
-                ).length
-              })`}
+              label={`Bestsellers (${getProduseCurente().filter(
+                (produs) =>
+                  produs.taguri.filter((tag) =>
+                    Object.keys(tag).includes("Bestseller")
+                  ).length > 0
+              ).length
+                })`}
             />
           </FormGroup>
         </Collapse>
@@ -995,21 +1201,20 @@ const CategoriesPage = () => {
                   inputProps={{ "aria-label": "controlled" }}
                 />
               }
-              label={`Noutăți (${
-                getProduseCurente().filter(
-                  (produs) =>
-                    produs.taguri.filter((tag) =>
-                      Object.keys(tag).includes("New")
-                    ).length > 0
-                ).length
-              })`}
+              label={`Noutăți (${getProduseCurente().filter(
+                (produs) =>
+                  produs.taguri.filter((tag) =>
+                    Object.keys(tag).includes("New")
+                  ).length > 0
+              ).length
+                })`}
             />
           </FormGroup>
         </Collapse>
         {subsubcategories
           .map((subsubcategory) => subsubcategory._id)
           .includes(params.idCategorie) &&
-        currentSpecifications.length === 2 ? (
+          currentSpecifications.length === 2 ? (
           <>
             <Divider />
             <ListItemButton onClick={handleOpenFirstCustomFilter}>
@@ -1047,12 +1252,11 @@ const CategoriesPage = () => {
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     }
-                    label={`${Object.keys(optiune)[0]} (${
-                      getProduseCurente().filter(
-                        (produs) =>
-                          getFilteredCustom(produs, optiune).length > 0
-                      ).length
-                    })`}
+                    label={`${Object.keys(optiune)[0]} (${getProduseCurente().filter(
+                      (produs) =>
+                        getFilteredCustom(produs, optiune).length > 0
+                    ).length
+                      })`}
                   />
                 ))}
               </FormGroup>
@@ -1094,12 +1298,11 @@ const CategoriesPage = () => {
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     }
-                    label={`${Object.keys(optiune)[0]} (${
-                      getProduseCurente().filter(
-                        (produs) =>
-                          getFilteredCustom(produs, optiune).length > 0
-                      ).length
-                    })`}
+                    label={`${Object.keys(optiune)[0]} (${getProduseCurente().filter(
+                      (produs) =>
+                        getFilteredCustom(produs, optiune).length > 0
+                    ).length
+                      })`}
                   />
                 ))}
               </FormGroup>
@@ -1302,8 +1505,8 @@ const CategoriesPage = () => {
               >
                 {categories.length > 0
                   ? categories.filter(
-                      (category) => category._id === subcategory.idCategorie
-                    )[0].nume
+                    (category) => category._id === subcategory.idCategorie
+                  )[0].nume
                   : null}
               </Typography>
               <Typography sx={{ p: 1 }}>{">"}</Typography>
@@ -1605,8 +1808,8 @@ const CategoriesPage = () => {
                         <Typography sx={{ fontWeight: "700" }}>
                           {brands.length > 0
                             ? brands.filter(
-                                (brand) => brand._id === product.idBrand
-                              )[0].nume
+                              (brand) => brand._id === product.idBrand
+                            )[0].nume
                             : null}
                         </Typography>
                         <Typography sx={{ fontSize: "18px" }}>
@@ -1742,8 +1945,8 @@ const CategoriesPage = () => {
                       <Typography sx={{ fontWeight: "700", fontSize: "23px" }}>
                         {brands.length > 0
                           ? brands.filter(
-                              (brand) => brand._id === product.idBrand
-                            )[0].nume
+                            (brand) => brand._id === product.idBrand
+                          )[0].nume
                           : null}
                       </Typography>
                       <Typography sx={{ fontSize: "20px" }}>
@@ -1908,8 +2111,8 @@ const CategoriesPage = () => {
                               (product) => product._id === idProductInCart
                             )
                               ? products.find(
-                                  (product) => product._id === idProductInCart
-                                ).denumire
+                                (product) => product._id === idProductInCart
+                              ).denumire
                               : ""}
                           </Typography>
                           <Typography sx={{ color: "#979797" }}>
@@ -1920,8 +2123,8 @@ const CategoriesPage = () => {
                               (product) => product._id === idProductInCart
                             )
                               ? products.find(
-                                  (product) => product._id === idProductInCart
-                                ).pret
+                                (product) => product._id === idProductInCart
+                              ).pret
                               : ""}{" "}
                             lei
                           </Typography>

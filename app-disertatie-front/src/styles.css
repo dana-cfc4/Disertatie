@@ -12,22 +12,23 @@
 }
 
 .image-gallery-thumbnails {
-display: flex;
-flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (min-width: 2099px) {
-.image-item {
-    width: 65%;
-    margin: auto
+    .image-item {
+        width: 65%;
+        margin: auto
+    }
 }
-}
+
 @media (max-width: 2100px) {
-.image-item {
-    width: 100%;
-}
+    .image-item {
+        width: 100%;
+    }
 }
 
 .sr-combo-inputs {
@@ -81,7 +82,7 @@ flex-direction: column;
     border: 1px solid #ddd !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .4) !important;
     font-size: smaller;
-    background: hsla(0, 0%, 100%, .7);
+    background: hsla(0, 0%, 100%, .9);
 }
 
 .awesomplete>ul::before .awesomplete>ul::after {
@@ -100,5 +101,25 @@ flex-direction: column;
 }
 
 .awesomplete .suggestion-details {
-    display: block
+    display: block;
+    margin-top: 7px;
+}
+
+.divStyle {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    align-items: center;
+}
+
+.divStyle2 {
+    display: flex;
+    flex-direction: column;
+}
+
+#dateChosen,
+#statusChosen {
+    width: 100%;
+    margin-bottom: 10px;
+    margin-left: 10px;
 }

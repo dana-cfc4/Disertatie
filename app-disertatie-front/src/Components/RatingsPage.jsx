@@ -11,12 +11,12 @@ import {
 } from "../store/actions/ratings";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../Utils/context";
-    
-const RatingsPage = ({ currentProduct, sendRating, ratingToEdit}) => {
+
+const RatingsPage = ({ currentProduct, sendRating, ratingToEdit }) => {
   const auth = useAuth();
   const dispatch = useDispatch();
 
-  const [recenzie, setRecenzie] = useState(ratingToEdit? ratingToEdit.comentariu : "");
+  const [recenzie, setRecenzie] = useState(ratingToEdit ? ratingToEdit.comentariu : "");
 
   const changeRecenzie = (event) => {
     setRecenzie(event.target.value);
@@ -47,7 +47,7 @@ const RatingsPage = ({ currentProduct, sendRating, ratingToEdit}) => {
   };
 
   const addNewReview = () => {
-    if (auth) {
+    if (auth && auth._id) {
       const review = {
         idProdus: currentProduct._id,
         comentariu: recenzie,
@@ -73,21 +73,21 @@ const RatingsPage = ({ currentProduct, sendRating, ratingToEdit}) => {
   }
 
   const editCurrentReview = () => {
-      const review = {
-        idProdus: currentProduct._id,
-        comentariu: recenzie,
-        rating: parseInt(givenRating),
-        data: new Date(),
-      };
-        dispatch(
-          editRating(
-            `http://localhost:8080/ratings/${ratingToEdit._id}`,
-            review
-          )
-        );
+    const review = {
+      idProdus: currentProduct._id,
+      comentariu: recenzie,
+      rating: parseInt(givenRating),
+      data: new Date(),
+    };
+    dispatch(
+      editRating(
+        `http://localhost:8080/ratings/${ratingToEdit._id}`,
+        review
+      )
+    );
     sendRating()
   };
-  
+
 
   return (
     <div

@@ -5,7 +5,6 @@ const initialState = {
 export default function addOrder(state = initialState, action) {
   switch (action.type) {
     case "ADD_ORDER":
-      console.log(state.orders, "ofdrs")
       return {
         ...state,
         orders: [

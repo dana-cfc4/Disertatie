@@ -21,13 +21,17 @@ import logoNou from "../Images/logoNou.png";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import RecommendIcon from '@mui/icons-material/Recommend';
 import ListItemIcon from "@mui/material/ListItemIcon";
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import SignUp from "./SignUp";
 import Logout from "@mui/icons-material/Logout";
 import SearchProduct from "./SearchProduct";
 import { useAuth } from "../Utils/context";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../store/actions/users";
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { setFavorites } from "../store/actions/favorites";
 import { setCarts } from "../store/actions/shoppingCarts";
 import { setProducts } from "../store/actions/products";
@@ -38,7 +42,7 @@ import { setBrands } from "../store/actions/brands";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [openRegisterModal, setOpenRegisterModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElLogout, setAnchorElLogout] = useState(null);
@@ -93,15 +97,15 @@ const Header = () => {
   const selectCarts = (state) => state.shoppingCarts;
   const { carts } = useSelector(selectCarts);
 
-   const selectProducts = (state) => state.products;
+  const selectProducts = (state) => state.products;
   const { products } = useSelector(selectProducts);
 
   const selectCategories = (state) => state.categories;
   const { categories } = useSelector(selectCategories);
-  
+
   const selectSubCategories = (state) => state.subcategories;
   const { subcategories } = useSelector(selectSubCategories);
-  
+
   const selectSubSubCategories = (state) => state.subsubcategories;
   const { subsubcategories } = useSelector(selectSubSubCategories);
 
@@ -125,8 +129,8 @@ const Header = () => {
       let currentUserCarts = carts.find((cart) => cart.idUtilizator === auth._id)
       if (currentUserCarts)
         currentUserCarts.produse.map(produs => {
-        nrProducts += parseInt(produs.cantitate)
-      });
+          nrProducts += parseInt(produs.cantitate)
+        });
     } else if (currentSessionCarts.length === 1) {
       currentSessionCarts[0].produse.map((produs) => {
         nrProducts += parseInt(produs.cantitate);
@@ -136,11 +140,30 @@ const Header = () => {
   };
 
   const selectProdus = (selected) => {
-    console.log(selected,"Selected")
     if (products.filter(product => product.denumire === selected).length > 0) {
       const filteredProducts = products.find(product => product.denumire === selected)
-      if(filteredProducts)
-      navigate(`/produse/${filteredProducts._id}`);
+      if (filteredProducts)
+        navigate(`/produse/${filteredProducts._id}`);
+    }
+    else if (categories.filter(category => category.nume === selected).length > 0) {
+      const filteredCategories = categories.find(category => category.nume === selected)
+      if (filteredCategories)
+        navigate(`/categorii/${filteredCategories._id}`);
+    }
+    else if (subcategories.filter(subcategory => subcategory.nume === selected).length > 0) {
+      const filteredSubCategories = subcategories.find(subcategory => subcategory.nume === selected)
+      if (filteredSubCategories)
+        navigate(`/categorii/${filteredSubCategories._id}`);
+    }
+    else if (subsubcategories.filter(subsubcategory => subsubcategory.nume === selected).length > 0) {
+      const filteredSubSubCategories = subsubcategories.find(subsubcategory => subsubcategory.nume === selected)
+      if (filteredSubSubCategories)
+        navigate(`/categorii/${filteredSubSubCategories._id}`);
+    }
+    else if (brands.filter(brand => brand.nume === selected).length > 0) {
+      const filteredBrands = brands.find(brand => brand.nume === selected)
+      if (filteredBrands)
+        navigate(`/branduri/${filteredBrands._id}`);
     }
   }
 
@@ -159,7 +182,9 @@ const Header = () => {
           }}
         >
           <Toolbar>
-            <img src={logoNou} height="70px" alt="logo"></img>
+            <Link to="/">
+              <img src={logoNou} height="70px" alt="logo"></img>
+            </Link>
             {/* <Search>
               <SearchIconWrapper>
                 <SearchIcon />
@@ -169,7 +194,7 @@ const Header = () => {
                 inputProps={{ "aria-label": "search" }}
               />
             </Search> */}
-            <SearchProduct selectProdus={selectProdus} products={products} categories={categories} subcategories={subcategories} subsubcategories={subsubcategories} brands={brands}/>
+            <SearchProduct selectProdus={selectProdus} productss={products} categories={categories} subcategories={subcategories} subsubcategories={subsubcategories} brands={brands} />
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "flex", md: "flex" } }}>
               <Popover
@@ -297,6 +322,30 @@ const Header = () => {
                     <MenuItem component={Link} to={`/contulmeu/${auth._id}`}>
                       <Avatar /> Contul meu
                     </MenuItem>
+                    <MenuItem component={Link} to={`/comenzilemele`}>
+                      <ListItemIcon>
+                        <CreditCardIcon fontSize="small" />
+                      </ListItemIcon>
+                      Comenzile mele
+                    </MenuItem>
+                    <MenuItem component={Link} to={`/produsecomandate`}>
+                      <ListItemIcon>
+                        <ShoppingCartCheckoutIcon fontSize="small" />
+                      </ListItemIcon>
+                      Produse comandate
+                    </MenuItem>
+                    <MenuItem component={Link} to={`/favorite`}>
+                      <ListItemIcon>
+                        <FavoriteBorderIcon fontSize="medium" />
+                      </ListItemIcon>
+                      Favorite
+                    </MenuItem>
+                    <MenuItem component={Link} to={`/recenziilemele`}>
+                      <ListItemIcon>
+                        <StarOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      Recenziile mele
+                    </MenuItem>
                     <MenuItem onClick={logout}>
                       <ListItemIcon>
                         <Logout fontSize="small" />
@@ -306,13 +355,21 @@ const Header = () => {
                   </Menu>
                 </>
               )}
+              {auth ?
+                <IconButton
+                  size="large"
+                  component={Link}
+                  to={"/recomandari"}
+                >
+                  <RecommendIcon />
+                </IconButton> : null}
               <IconButton size="large" component={Link} to={"/favorite"}>
                 <Badge
                   badgeContent={
                     auth && auth._id
                       ? favorites.filter(
-                          (favorite) => favorite.idUtilizator === auth._id
-                        ).length
+                        (favorite) => favorite.idUtilizator === auth._id
+                      ).length
                       : currentSessionFavorites.length
                   }
                   color="error"
@@ -333,7 +390,7 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </Box>
-    </Grid>
+    </Grid >
   );
 };
 

@@ -61,20 +61,9 @@ export default function SignUp({ mode, handleCloseRegisterModal }) {
   };
 
   const dispatch = useDispatch();
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     firstName: data.get("firstName"),
-  //     lastName: data.get("lastName"),
-  //     emailAddress: data.get("emailAddress"),
-  //     password: data.get("password"),
-  //     phoneNumber: data.get("phoneNumber"),
-  //     birthday: birthday,
-  //   });
-  // };
   const [message, setMessage] = useState("");
   const role = "user";
+  const puncteFidelitate = 0
   const authenticateMode = {
     signIn: () => dispatch(signIn({ emailAddress, password })),
     signUp: () =>
@@ -88,6 +77,7 @@ export default function SignUp({ mode, handleCloseRegisterModal }) {
           repeatPassword,
           birthday,
           role,
+          puncteFidelitate
         })
       ),
   };

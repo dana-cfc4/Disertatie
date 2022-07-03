@@ -57,6 +57,9 @@ import {
   deleteRating,
   setRatings,
 } from "../store/actions/ratings";
+import {
+  setOrders,
+} from "../store/actions/orders";
 import { setUsers } from "../store/actions/users";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Carousel from "react-multi-carousel";
@@ -81,9 +84,9 @@ const ProductPage = () => {
 
   const currentSubSubCategory = currentProduct
     ? subsubcategories.find(
-        (subsubcategory) =>
-          subsubcategory._id === currentProduct.idSubSubCategorie
-      )
+      (subsubcategory) =>
+        subsubcategory._id === currentProduct.idSubSubCategorie
+    )
     : "";
 
   const selectSubCategories = (state) => state.subcategories;
@@ -91,9 +94,9 @@ const ProductPage = () => {
 
   const currentSubCategory = currentSubSubCategory
     ? subcategories.find(
-        (subcategory) =>
-          subcategory._id === currentSubSubCategory.idSubCategorie
-      )
+      (subcategory) =>
+        subcategory._id === currentSubSubCategory.idSubCategorie
+    )
     : "";
 
   const selectCategories = (state) => state.categories;
@@ -101,8 +104,8 @@ const ProductPage = () => {
 
   const currentCategory = currentSubCategory
     ? categories.find(
-        (category) => category._id === currentSubCategory.idCategorie
-      )
+      (category) => category._id === currentSubCategory.idCategorie
+    )
     : "";
 
   const selectUsers = (state) => state.users;
@@ -110,6 +113,9 @@ const ProductPage = () => {
 
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedColor2, setSelectedColor2] = useState("");
+
+  const selectOrders = (state) => state.orders;
+  const { orders } = useSelector(selectOrders);
 
   let images = [];
   if (currentProduct) {
@@ -214,7 +220,7 @@ const ProductPage = () => {
 
   const getFavProductModal = (product) => {
     if (
-      (auth &&
+      (auth && auth._id &&
         favorites
           .filter((fav) => fav.idUtilizator === auth._id)
           .map((favorite) => favorite.idProdus)
@@ -252,7 +258,7 @@ const ProductPage = () => {
   };
 
   const addNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const favoriteWithUser = {
         idProdus: product._id,
         idUtilizator: auth._id,
@@ -269,7 +275,7 @@ const ProductPage = () => {
   };
 
   const deleteNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const fav = favorites.find(
         (favorite) =>
           favorite.idProdus === product._id &&
@@ -296,7 +302,7 @@ const ProductPage = () => {
       produs["culoare"] = Object.keys(color)[0];
       produs["cantitate"] = quantity;
 
-      if (auth) {
+      if (auth && auth._id) {
         const currentUserCart = carts.find(
           (cart) => cart.idUtilizator === auth._id
         );
@@ -620,19 +626,31 @@ const ProductPage = () => {
   };
 
   const enableBoth = () => {
-     return auth && ratings.length > 0
+    return auth && ratings.length > 0
       ? ratings.filter((rating) => rating.idUtilizator === auth._id).sort((rating1, rating2) =>
-      rating1.rating > rating2.rating ? -1 : 1
-    )
+        rating1.rating > rating2.rating ? -1 : 1
+      )
       : [];
   }
 
   const getCurrentRatings = () => {
-      if (isFiltered && !isSorted) return enableFilterByUser();
-      else if (isSorted && !isFiltered) return enableSort();
-      else if (isSorted && isFiltered) return enableBoth();
-      else if (!isSorted && !isFiltered) return ratings; 
+    if (isFiltered && !isSorted) return enableFilterByUser();
+    else if (isSorted && !isFiltered) return enableSort();
+    else if (isSorted && isFiltered) return enableBoth();
+    else if (!isSorted && !isFiltered) return ratings;
   };
+
+  const getIsProductInOrder = (product) => {
+    let currentUserOrders = orders.filter(order => auth && order.idUtilizator === auth._id)
+    let produse = []
+    currentUserOrders.map(currentUserOrder => {
+      produse = [...produse, ...currentUserOrder.cosCumparaturi.produse]
+    })
+    let idProduse = produse.map(produs => produs.idProdus)
+    if (idProduse.includes(product._id))
+      return true
+    else return false
+  }
 
   useEffect(() => {
     dispatch(setProducts("http://localhost:8080/products"));
@@ -641,14 +659,15 @@ const ProductPage = () => {
     dispatch(setFavorites("http://localhost:8080/favorites"));
     dispatch(setCarts("http://localhost:8080/shoppingCart"));
     dispatch(setUsers("http://localhost:8080/users"));
+    dispatch(setOrders("http://localhost:8080/orders"));
   }, []);
 
   return (
     <>
       {currentProduct &&
-      currentCategory &&
-      currentSubCategory &&
-      currentSubSubCategory ? (
+        currentCategory &&
+        currentSubCategory &&
+        currentSubSubCategory ? (
         <>
           <Grid sx={firstDivStyle}>
             <div
@@ -715,8 +734,8 @@ const ProductPage = () => {
                 <Typography sx={{ fontWeight: "800" }}>
                   {brands.length > 0
                     ? brands.filter(
-                        (brand) => brand._id === currentProduct.idBrand
-                      )[0].nume
+                      (brand) => brand._id === currentProduct.idBrand
+                    )[0].nume
                     : null}
                 </Typography>
                 <Typography sx={{ fontSize: "22px" }}>
@@ -794,12 +813,12 @@ const ProductPage = () => {
                         marginRight: "12px",
                         border: selectedColor
                           ? selectedColor ===
-                              currentProduct.culoriDisponibile[0] && i === 0
+                            currentProduct.culoriDisponibile[0] && i === 0
                             ? "1.5px solid black"
                             : null
                           : i === 0
-                          ? "1.5px solid black"
-                          : null,
+                            ? "1.5px solid black"
+                            : null,
                       }}
                       alt="Not available"
                       src={Object.values(culoare)[0]}
@@ -923,9 +942,9 @@ const ProductPage = () => {
                             <ListItemText primary={Object.keys(tag)[0]} />
                           </ListItem>
                           {i !==
-                          currentProduct.taguri.filter(
-                            (tag) => Object.values(tag)[0]
-                          ).length /
+                            currentProduct.taguri.filter(
+                              (tag) => Object.values(tag)[0]
+                            ).length /
                             2 -
                             1 ? (
                             <Divider variant="inset" component="li" />
@@ -967,9 +986,9 @@ const ProductPage = () => {
                             <ListItemText primary={Object.keys(tag)[0]} />
                           </ListItem>
                           {i !==
-                          currentProduct.taguri.filter(
-                            (tag) => Object.values(tag)[0]
-                          ).length /
+                            currentProduct.taguri.filter(
+                              (tag) => Object.values(tag)[0]
+                            ).length /
                             2 -
                             1 ? (
                             <Divider variant="inset" component="li" />
@@ -1027,19 +1046,21 @@ const ProductPage = () => {
                       marginBottom: "40px",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      sx={{
-                        marginRight: "80px",
-                        background: "rgb(46, 59, 85)",
-                        "&:hover": {
-                          background: "rgb(72, 81, 101)",
-                        },
-                      }}
-                      onClick={changeDisplayAddReview}
-                    >
-                      Scrie o recenzie
-                    </Button>
+                    {getIsProductInOrder(currentProduct) ?
+                      <Button
+                        variant="contained"
+                        sx={{
+                          marginRight: "80px",
+                          background: "rgb(46, 59, 85)",
+                          "&:hover": {
+                            background: "rgb(72, 81, 101)",
+                          },
+                        }}
+                        onClick={changeDisplayAddReview}
+                      >
+                        Scrie o recenzie
+                      </Button>
+                      : null}
                     <Tooltip
                       arrow
                       title={
@@ -1077,7 +1098,7 @@ const ProductPage = () => {
               .filter(
                 (produs) =>
                   produs.idSubSubCategorie ===
-                    currentProduct.idSubSubCategorie &&
+                  currentProduct.idSubSubCategorie &&
                   produs._id !== currentProduct._id
               )
               .slice(0, 7)
@@ -1095,8 +1116,8 @@ const ProductPage = () => {
                     }}
                   >
                     <div
-                      onMouseOver={() => displayQuicklook(product._id)}
-                      onMouseLeave={() => hideQuicklook(product._id)}
+                      onMouseOver={() => displayQuicklook(product._id + '-1')}
+                      onMouseLeave={() => hideQuicklook(product._id + '-1')}
                     >
                       <CardActionArea as={Link} to={`/produse/${product._id}`}>
                         <CardMedia
@@ -1114,7 +1135,7 @@ const ProductPage = () => {
                       </CardActionArea>
                       <Button
                         variant="contained"
-                        id={product._id}
+                        id={product._id + '-1'}
                         sx={{
                           visibility: "hidden",
                           width: "85%",
@@ -1141,8 +1162,250 @@ const ProductPage = () => {
                         <Typography sx={{ fontWeight: "700" }}>
                           {brands.length > 0
                             ? brands.filter(
-                                (brand) => brand._id === product.idBrand
-                              )[0].nume
+                              (brand) => brand._id === product.idBrand
+                            )[0].nume
+                            : null}
+                        </Typography>
+                        <Typography sx={{ fontSize: "18px" }}>
+                          {product.denumire}
+                        </Typography>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            marginTop: "7px",
+                            marginBottom: "5px",
+                          }}
+                        >
+                          <Rating
+                            name="read-only"
+                            value={parseFloat(getProductRating(product))}
+                            precision={0.5}
+                            readOnly
+                            sx={{ color: "#485165", marginRight: "10px" }}
+                          />
+                          <Typography>
+                            {
+                              ratings.filter(
+                                (review) => review.idProdus === product._id
+                              ).length
+                            }{" "}
+                            {ratings.filter(
+                              (review) => review.idProdus === product._id
+                            ).length === 1
+                              ? "recenzie"
+                              : "recenzii"}
+                          </Typography>
+                        </div>
+                        <Typography
+                          sx={{ fontWeight: "780", fontSize: "18px" }}
+                        >
+                          {product.pret} lei
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                );
+              })}
+          </Carousel>
+          <Typography sx={fourthGridStyle}>Din aceeasi gama</Typography>
+          <Carousel
+            containerClass="image-item"
+            responsive={responsive}
+            autoPlay={false}
+            shouldResetAutoplay={false}
+          >
+            {products
+              .filter(
+                (produs) =>
+                  produs.idSubSubCategorie ===
+                  currentProduct.idSubSubCategorie &&
+                  produs._id !== currentProduct._id && produs.idBrand === currentProduct.idBrand
+              )
+              .slice(0, 7)
+              .map((product) => {
+                return (
+                  <Card
+                    key={product._id}
+                    sx={{
+                      width: "75%",
+                      height: "100%",
+                      border: "none",
+                      boxShadow: "none",
+                      marginTop: "10px",
+                      marginRight: "10px",
+                    }}
+                  >
+                    <div
+                      onMouseOver={() => displayQuicklook(product._id + '-2')}
+                      onMouseLeave={() => hideQuicklook(product._id + '-2')}
+                    >
+                      <CardActionArea as={Link} to={`/produse/${product._id}`}>
+                        <CardMedia
+                          component="img"
+                          height="360"
+                          image={Object.values(product.imagini[0])[0][0]}
+                          alt={product.denumire}
+                          style={{
+                            display: "inline - block",
+                            position: "relative",
+                            cursor: "pointer",
+                            maxWidth: "390px",
+                          }}
+                        />
+                      </CardActionArea>
+                      <Button
+                        variant="contained"
+                        id={product._id + '-2'}
+                        sx={{
+                          visibility: "hidden",
+                          width: "85%",
+                          textTransform: "none",
+                          fontSize: "15px",
+                          background: "#00000060",
+                          "&:hover": {
+                            background: "#00000080",
+                          },
+                        }}
+                        onClick={() => quicklook(product)}
+                      >
+                        Quicklook
+                      </Button>
+                    </div>
+                    <CardActionArea
+                      as={Link}
+                      to={`/produse/${product._id}`}
+                      sx={{ textDecoration: "none", color: "black" }}
+                    >
+                      <CardContent
+                        sx={{ textAlign: "justify", marginLeft: "7px" }}
+                      >
+                        <Typography sx={{ fontWeight: "700" }}>
+                          {brands.length > 0
+                            ? brands.filter(
+                              (brand) => brand._id === product.idBrand
+                            )[0].nume
+                            : null}
+                        </Typography>
+                        <Typography sx={{ fontSize: "18px" }}>
+                          {product.denumire}
+                        </Typography>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            marginTop: "7px",
+                            marginBottom: "5px",
+                          }}
+                        >
+                          <Rating
+                            name="read-only"
+                            value={parseFloat(getProductRating(product))}
+                            precision={0.5}
+                            readOnly
+                            sx={{ color: "#485165", marginRight: "10px" }}
+                          />
+                          <Typography>
+                            {
+                              ratings.filter(
+                                (review) => review.idProdus === product._id
+                              ).length
+                            }{" "}
+                            {ratings.filter(
+                              (review) => review.idProdus === product._id
+                            ).length === 1
+                              ? "recenzie"
+                              : "recenzii"}
+                          </Typography>
+                        </div>
+                        <Typography
+                          sx={{ fontWeight: "780", fontSize: "18px" }}
+                        >
+                          {product.pret} lei
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                );
+              })}
+          </Carousel>
+          <Typography sx={fourthGridStyle}>Completeaza-ti look-ul</Typography>
+          <Carousel
+            containerClass="image-item"
+            responsive={responsive}
+            autoPlay={false}
+            shouldResetAutoplay={false}
+          >
+            {products
+              .filter(
+                (produs) =>
+                  produs.idSubSubCategorie !==
+                  currentProduct.idSubSubCategorie &&
+                  produs._id !== currentProduct._id && produs.idBrand === currentProduct.idBrand
+              )
+              .slice(0, 7)
+              .map((product) => {
+                return (
+                  <Card
+                    key={product._id}
+                    sx={{
+                      width: "75%",
+                      height: "100%",
+                      border: "none",
+                      boxShadow: "none",
+                      marginTop: "10px",
+                      marginRight: "10px",
+                    }}
+                  >
+                    <div
+                      onMouseOver={() => displayQuicklook(product._id + '-3')}
+                      onMouseLeave={() => hideQuicklook(product._id + '-3')}
+                    >
+                      <CardActionArea as={Link} to={`/produse/${product._id}`}>
+                        <CardMedia
+                          component="img"
+                          height="360"
+                          image={Object.values(product.imagini[0])[0][0]}
+                          alt={product.denumire}
+                          style={{
+                            display: "inline - block",
+                            position: "relative",
+                            cursor: "pointer",
+                            maxWidth: "390px",
+                          }}
+                        />
+                      </CardActionArea>
+                      <Button
+                        variant="contained"
+                        id={product._id + '-3'}
+                        sx={{
+                          visibility: "hidden",
+                          width: "85%",
+                          textTransform: "none",
+                          fontSize: "15px",
+                          background: "#00000060",
+                          "&:hover": {
+                            background: "#00000080",
+                          },
+                        }}
+                        onClick={() => quicklook(product)}
+                      >
+                        Quicklook
+                      </Button>
+                    </div>
+                    <CardActionArea
+                      as={Link}
+                      to={`/produse/${product._id}`}
+                      sx={{ textDecoration: "none", color: "black" }}
+                    >
+                      <CardContent
+                        sx={{ textAlign: "justify", marginLeft: "7px" }}
+                      >
+                        <Typography sx={{ fontWeight: "700" }}>
+                          {brands.length > 0
+                            ? brands.filter(
+                              (brand) => brand._id === product.idBrand
+                            )[0].nume
                             : null}
                         </Typography>
                         <Typography sx={{ fontSize: "18px" }}>
@@ -1274,8 +1537,8 @@ const ProductPage = () => {
                         >
                           {brands.length > 0
                             ? brands.filter(
-                                (brand) => brand._id === product.idBrand
-                              )[0].nume
+                              (brand) => brand._id === product.idBrand
+                            )[0].nume
                             : null}
                         </Typography>
                         <Typography sx={{ fontSize: "20px" }}>
@@ -1448,8 +1711,8 @@ const ProductPage = () => {
                                 (product) => product._id === idProductInCart
                               )
                                 ? products.find(
-                                    (product) => product._id === idProductInCart
-                                  ).denumire
+                                  (product) => product._id === idProductInCart
+                                ).denumire
                                 : ""}
                             </Typography>
                             <Typography sx={{ color: "#979797" }}>
@@ -1460,8 +1723,8 @@ const ProductPage = () => {
                                 (product) => product._id === idProductInCart
                               )
                                 ? products.find(
-                                    (product) => product._id === idProductInCart
-                                  ).pret
+                                  (product) => product._id === idProductInCart
+                                ).pret
                                 : ""}{" "}
                               lei
                             </Typography>

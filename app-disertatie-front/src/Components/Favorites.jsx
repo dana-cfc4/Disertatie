@@ -76,130 +76,130 @@ const Favorites = () => {
   const selectBrand = (state) => state.brands;
   const { brands } = useSelector(selectBrand);
 
-   const selectRatings = (state) => state.ratings;
+  const selectRatings = (state) => state.ratings;
   const { ratings } = useSelector(selectRatings);
-  
-   const [quantity, setQuantity] = useState(1);
-   const changeQuantity = (event) => {
-     setQuantity(event.target.value);
-   };
 
-   const selectColor = (color) => {
-     if (selectedColor)
-       document.getElementById(Object.keys(selectedColor)[0]).style.border =
-         "0px solid black";
-     document.getElementById(Object.keys(color)[0]).style.border =
-       "1.5px solid black";
-     setSelectedColor(color);
+  const [quantity, setQuantity] = useState(1);
+  const changeQuantity = (event) => {
+    setQuantity(event.target.value);
   };
-  
-   const [idProductInCart, setIdProductInCart] = useState("");
+
+  const selectColor = (color) => {
+    if (selectedColor)
+      document.getElementById(Object.keys(selectedColor)[0]).style.border =
+        "0px solid black";
+    document.getElementById(Object.keys(color)[0]).style.border =
+      "1.5px solid black";
+    setSelectedColor(color);
+  };
+
+  const [idProductInCart, setIdProductInCart] = useState("");
   const [colorProductInCart, setColorProductInCart] = useState("");
-  
-   const adaugaInCos = (product, color) => {
-     if (quantity > 0) {
-       let produs = {};
-       produs["idProdus"] = product._id;
-       produs["culoare"] = Object.keys(color)[0];
-       produs["cantitate"] = quantity;
 
-       if (auth) {
-         const currentUserCart = carts.find(
-           (cart) => cart.idUtilizator === auth._id
-         );
-         if (currentUserCart) {
-           let produseToAdd = [];
-           let currentProduct = currentUserCart.produse.find(
-             (produs) =>
-               produs.idProdus === product._id &&
-               produs.culoare === Object.keys(color)[0]
-           );
+  const adaugaInCos = (product, color) => {
+    if (quantity > 0) {
+      let produs = {};
+      produs["idProdus"] = product._id;
+      produs["culoare"] = Object.keys(color)[0];
+      produs["cantitate"] = quantity;
 
-           if (currentProduct) {
-             currentProduct["cantitate"] =
-               parseInt(currentProduct["cantitate"]) + parseInt(quantity);
+      if (auth && auth._id) {
+        const currentUserCart = carts.find(
+          (cart) => cart.idUtilizator === auth._id
+        );
+        if (currentUserCart) {
+          let produseToAdd = [];
+          let currentProduct = currentUserCart.produse.find(
+            (produs) =>
+              produs.idProdus === product._id &&
+              produs.culoare === Object.keys(color)[0]
+          );
 
-             let filteredProducts = currentUserCart.produse.filter(
-               (produs) =>
-                 produs.idProdus !== currentProduct.idProdus ||
-                 produs.culoare !== currentProduct.culoare
-             );
-             filteredProducts.push(currentProduct);
-             produseToAdd = filteredProducts.map((product) => product);
-           } else {
-             produseToAdd = [...currentUserCart.produse, produs];
-           }
-           const cartOfUser = {
-             produse: produseToAdd,
-             idUtilizator: auth._id,
-           };
-           dispatch(
-             editCart(
-               `http://localhost:8080/shoppingCart/${currentUserCart._id}`,
-               cartOfUser
-             )
-           );
-           handleCloseQuickViewModal();
-           setOpenMiniCartModal(true);
-         } else {
-           let produseToAdd = [];
-           produseToAdd.push(produs);
+          if (currentProduct) {
+            currentProduct["cantitate"] =
+              parseInt(currentProduct["cantitate"]) + parseInt(quantity);
 
-           const cartOfUser = {
-             produse: produseToAdd,
-             idUtilizator: auth._id,
-           };
-           dispatch(addCart("http://localhost:8080/shoppingCart", cartOfUser));
-           handleCloseQuickViewModal();
-           setOpenMiniCartModal(true);
-         }
-       } else {
-         if (currentSessionCarts && currentSessionCarts.length === 1) {
-           let produseToAdd = [];
-           let currentProduct = currentSessionCarts[0].produse.find(
-             (produs) =>
-               produs.idProdus === product._id &&
-               produs.culoare === Object.keys(color)[0]
-           );
+            let filteredProducts = currentUserCart.produse.filter(
+              (produs) =>
+                produs.idProdus !== currentProduct.idProdus ||
+                produs.culoare !== currentProduct.culoare
+            );
+            filteredProducts.push(currentProduct);
+            produseToAdd = filteredProducts.map((product) => product);
+          } else {
+            produseToAdd = [...currentUserCart.produse, produs];
+          }
+          const cartOfUser = {
+            produse: produseToAdd,
+            idUtilizator: auth._id,
+          };
+          dispatch(
+            editCart(
+              `http://localhost:8080/shoppingCart/${currentUserCart._id}`,
+              cartOfUser
+            )
+          );
+          handleCloseQuickViewModal();
+          setOpenMiniCartModal(true);
+        } else {
+          let produseToAdd = [];
+          produseToAdd.push(produs);
 
-           if (currentProduct) {
-             currentProduct["cantitate"] =
-               parseInt(currentProduct["cantitate"]) + parseInt(quantity);
+          const cartOfUser = {
+            produse: produseToAdd,
+            idUtilizator: auth._id,
+          };
+          dispatch(addCart("http://localhost:8080/shoppingCart", cartOfUser));
+          handleCloseQuickViewModal();
+          setOpenMiniCartModal(true);
+        }
+      } else {
+        if (currentSessionCarts && currentSessionCarts.length === 1) {
+          let produseToAdd = [];
+          let currentProduct = currentSessionCarts[0].produse.find(
+            (produs) =>
+              produs.idProdus === product._id &&
+              produs.culoare === Object.keys(color)[0]
+          );
 
-             let filteredProducts = currentSessionCarts[0].produse.filter(
-               (produs) =>
-                 produs.idProdus !== currentProduct.idProdus ||
-                 produs.culoare !== currentProduct.culoare
-             );
-             filteredProducts.push(currentProduct);
-             produseToAdd = filteredProducts.map((product) => product);
-           } else {
-             produseToAdd = [...currentSessionCarts[0].produse, produs];
-           }
-           const cartOfUser = [
-             {
-               produse: produseToAdd,
-             },
-           ];
-           dispatch(editCartNoUser(cartOfUser));
-           handleCloseQuickViewModal();
-           setOpenMiniCartModal(true);
-         } else {
-           let produseToAdd = [];
-           produseToAdd.push(produs);
+          if (currentProduct) {
+            currentProduct["cantitate"] =
+              parseInt(currentProduct["cantitate"]) + parseInt(quantity);
 
-           const cartOfUser = {
-             produse: produseToAdd,
-           };
-           dispatch(addCartNoUser(cartOfUser));
-           handleCloseQuickViewModal();
-           setOpenMiniCartModal(true);
-         }
-       }
-       setIdProductInCart(product._id);
-       setColorProductInCart(color);
-     }
-   };
+            let filteredProducts = currentSessionCarts[0].produse.filter(
+              (produs) =>
+                produs.idProdus !== currentProduct.idProdus ||
+                produs.culoare !== currentProduct.culoare
+            );
+            filteredProducts.push(currentProduct);
+            produseToAdd = filteredProducts.map((product) => product);
+          } else {
+            produseToAdd = [...currentSessionCarts[0].produse, produs];
+          }
+          const cartOfUser = [
+            {
+              produse: produseToAdd,
+            },
+          ];
+          dispatch(editCartNoUser(cartOfUser));
+          handleCloseQuickViewModal();
+          setOpenMiniCartModal(true);
+        } else {
+          let produseToAdd = [];
+          produseToAdd.push(produs);
+
+          const cartOfUser = {
+            produse: produseToAdd,
+          };
+          dispatch(addCartNoUser(cartOfUser));
+          handleCloseQuickViewModal();
+          setOpenMiniCartModal(true);
+        }
+      }
+      setIdProductInCart(product._id);
+      setColorProductInCart(color);
+    }
+  };
 
   const selectFavoriteNoUser = (state) =>
     state.favorites.currentSessionFavorites;
@@ -216,7 +216,7 @@ const Favorites = () => {
 
   const getFavProductModal = (product) => {
     if (
-      (auth &&
+      (auth && auth._id &&
         favorites
           .filter((fav) => fav.idUtilizator === auth._id)
           .map((favorite) => favorite.idProdus)
@@ -231,7 +231,7 @@ const Favorites = () => {
   };
 
   const addNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const favoriteWithUser = {
         idProdus: product,
         idUtilizator: auth._id,
@@ -248,7 +248,7 @@ const Favorites = () => {
   };
 
   const deleteNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const fav = favorites.find(
         (favorite) =>
           favorite.idProdus === product && favorite.idUtilizator === auth._id
@@ -277,7 +277,7 @@ const Favorites = () => {
     return formattedWidth;
   };
 
-   const getProductRating = (product) => {
+  const getProductRating = (product) => {
     let ratingProdus = 0;
     ratings
       .filter((review) => review.idProdus === product._id)
@@ -286,51 +286,51 @@ const Favorites = () => {
       });
     if (getNrReviews(product) > 0)
       return (ratingProdus / getNrReviews(product)).toFixed(1);
-      else return 0
+    else return 0
   };
 
   const getNrReviews = (product) => {
     const nrReviewsProduct = ratings.filter(
       (review) => review.idProdus === product._id
     ).length;
-     return nrReviewsProduct;
+    return nrReviewsProduct;
   };
 
-const getTagAvatar = (product) => {
-  if (
-    product.taguri.filter((tag) => Object.keys(tag).includes("Bestseller"))
-      .length > 0
-  )
-    return (
-      <Avatar
-        sx={{
-          width: `${getTextWidth("Bestseller")}`,
-          height: "32px",
-          backgroundColor: "#485165",
-        }}
-        variant="rounded"
-      >
-        <Typography sx={{ fontSize: "18px" }}>Bestseller</Typography>
-      </Avatar>
-    );
-  else if (
-    product.taguri.filter((tag) => Object.keys(tag).includes("New")).length > 0
-  )
-    return (
-      <Avatar
-        sx={{
-          width: `${getTextWidth("New")}`,
-          height: "32px",
-          backgroundColor: "#485165",
-        }}
-        variant="rounded"
-      >
-        <Typography sx={{ fontSize: "18px" }}>New</Typography>
-      </Avatar>
-    );
-  else return "";
+  const getTagAvatar = (product) => {
+    if (
+      product.taguri.filter((tag) => Object.keys(tag).includes("Bestseller"))
+        .length > 0
+    )
+      return (
+        <Avatar
+          sx={{
+            width: `${getTextWidth("Bestseller")}`,
+            height: "32px",
+            backgroundColor: "#485165",
+          }}
+          variant="rounded"
+        >
+          <Typography sx={{ fontSize: "18px" }}>Bestseller</Typography>
+        </Avatar>
+      );
+    else if (
+      product.taguri.filter((tag) => Object.keys(tag).includes("New")).length > 0
+    )
+      return (
+        <Avatar
+          sx={{
+            width: `${getTextWidth("New")}`,
+            height: "32px",
+            backgroundColor: "#485165",
+          }}
+          variant="rounded"
+        >
+          <Typography sx={{ fontSize: "18px" }}>New</Typography>
+        </Avatar>
+      );
+    else return "";
   };
-  
+
   const getProductInCartImage = () => {
     const product = products.find((product) => product._id === idProductInCart);
     if (product) {
@@ -341,7 +341,7 @@ const getTagAvatar = (product) => {
       return Object.values(imagine)[0][0];
     }
   };
-  
+
   const getBrand = (idProdus) => {
     const product = products.find((product) => product._id === idProdus);
     if (product) {
@@ -380,12 +380,6 @@ const getTagAvatar = (product) => {
     return [nrProducts, valoareCos];
   };
 
-  const getCurrentCart = () => {
-    if (auth) {
-      return carts.filter((cart) => cart.idUtilizator === auth._id);
-    } else return currentSessionCarts;
-  };
-
   const getCurrentFavorites = () => {
     if (auth) {
       return favorites.filter((favorite) => favorite.idUtilizator === auth._id);
@@ -399,15 +393,15 @@ const getTagAvatar = (product) => {
   };
 
   const getFavProduct = (productId) => {
-       return (
-         <IconButton
-           aria-label="add to favorites"
-           sx={{ alignItems: "flex-end" }}
-           onClick={() => deleteNewFavoriteNoUser(productId)}
-         >
-           <FavoriteIcon sx={{ color: "red" }} fontSize="large" />
-         </IconButton>
-       );
+    return (
+      <IconButton
+        aria-label="add to favorites"
+        sx={{ alignItems: "flex-end" }}
+        onClick={() => deleteNewFavoriteNoUser(productId)}
+      >
+        <FavoriteIcon sx={{ color: "red" }} fontSize="large" />
+      </IconButton>
+    );
   }
 
   const [openQuickViewModal, setOpenQuickViewModal] = useState(false);
@@ -429,7 +423,7 @@ const getTagAvatar = (product) => {
     setSelectedColor(product.culoriDisponibile[0]);
     setOpenQuickViewModal(true);
   };
-  
+
   useEffect(() => {
     dispatch(setProducts("http://localhost:8080/products"));
     dispatch(setRatings("http://localhost:8080/ratings"));
@@ -535,7 +529,7 @@ const getTagAvatar = (product) => {
                                 >
                                   {getCurrentProduct(favorit.idProdus)
                                     ? getCurrentProduct(favorit.idProdus)
-                                        .denumire
+                                      .denumire
                                     : ""}
                                 </Typography>
                                 <Typography
@@ -565,7 +559,7 @@ const getTagAvatar = (product) => {
                               >
                                 <Button
                                   variant="contained"
-                                  onClick={()=> quicklook(getCurrentProduct(favorit.idProdus))}
+                                  onClick={() => quicklook(getCurrentProduct(favorit.idProdus))}
                                   sx={{
                                     background: "#CF112C",
                                     width: "fit-content",
@@ -679,8 +673,8 @@ const getTagAvatar = (product) => {
                     <Typography sx={{ fontWeight: "700", fontSize: "23px" }}>
                       {brands.length > 0
                         ? brands.filter(
-                            (brand) => brand._id === product.idBrand
-                          )[0].nume
+                          (brand) => brand._id === product.idBrand
+                        )[0].nume
                         : null}
                     </Typography>
                     <Typography sx={{ fontSize: "20px" }}>
@@ -741,7 +735,7 @@ const getTagAvatar = (product) => {
                             marginRight: "12px",
                             border:
                               selectedColor === product.culoriDisponibile[0] &&
-                              i === 0
+                                i === 0
                                 ? "1.5px solid black"
                                 : null,
                           }}
@@ -829,7 +823,7 @@ const getTagAvatar = (product) => {
                       sx={{ width: 130, height: "80%" }}
                       alt="imagine produs"
                       src={getProductInCartImage()}
-                    /> 
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={
@@ -844,8 +838,8 @@ const getTagAvatar = (product) => {
                             (product) => product._id === idProductInCart
                           )
                             ? products.find(
-                                (product) => product._id === idProductInCart
-                              ).denumire
+                              (product) => product._id === idProductInCart
+                            ).denumire
                             : ""}
                         </Typography>
                         <Typography sx={{ color: "#979797" }}>
@@ -856,8 +850,8 @@ const getTagAvatar = (product) => {
                             (product) => product._id === idProductInCart
                           )
                             ? products.find(
-                                (product) => product._id === idProductInCart
-                              ).pret
+                              (product) => product._id === idProductInCart
+                            ).pret
                             : ""}{" "}
                           lei
                         </Typography>

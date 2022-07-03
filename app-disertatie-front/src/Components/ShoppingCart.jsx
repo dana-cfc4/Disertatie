@@ -30,6 +30,7 @@ import ImageGallery from "react-image-gallery";
 import Rating from "@mui/material/Rating";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -88,7 +89,7 @@ const ShoppingCart = () => {
         produs.cantitate = event.target.value;
       }
     });
-    if (auth) {
+    if (auth && auth._id) {
       dispatch(
         editCart(
           `http://localhost:8080/shoppingCart/${currentCart[0]._id}`,
@@ -115,7 +116,7 @@ const ShoppingCart = () => {
 
   const getFavProductModal = (product) => {
     if (
-      (auth &&
+      (auth && auth._id &&
         favorites
           .filter((fav) => fav.idUtilizator === auth._id)
           .map((favorite) => favorite.idProdus)
@@ -130,7 +131,7 @@ const ShoppingCart = () => {
   };
 
   const addNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const favoriteWithUser = {
         idProdus: product,
         idUtilizator: auth._id,
@@ -147,7 +148,7 @@ const ShoppingCart = () => {
   };
 
   const deleteNewFavoriteNoUser = (product) => {
-    if (auth) {
+    if (auth && auth._id) {
       const fav = favorites.find(
         (favorite) =>
           favorite.idProdus === product && favorite.idUtilizator === auth._id
@@ -219,7 +220,7 @@ const ShoppingCart = () => {
   };
 
   const getCurrentCart = () => {
-    if (auth) {
+    if (auth && auth._id) {
       return carts.filter((cart) => cart.idUtilizator === auth._id);
     } else return currentSessionCarts;
   };
@@ -239,7 +240,7 @@ const ShoppingCart = () => {
         (produs) => produs.idProdus !== idProdus || produs.culoare !== culoare
       );
     });
-    if (auth) {
+    if (auth && auth._id) {
       dispatch(
         editCart(
           `http://localhost:8080/shoppingCart/${currentCart[0]._id}`,
@@ -259,12 +260,12 @@ const ShoppingCart = () => {
   };
 
   const aplicaCodPromotional = () => {
-    if (promoCode !== "dana") setPromoCodeFinal("nueok");
+    if (promoCode !== "PR" + auth._id) setPromoCodeFinal("nueok");
     else setPromoCodeFinal("eok");
   };
 
   const getCostLivrare = () => {
-    if (getCartContent()[1] > 200)
+    if (getCartContent()[1] >= 200)
       return 0
     else return 15
   }
@@ -276,7 +277,7 @@ const ShoppingCart = () => {
   }
 
   const getValoareTotala = () => {
-return getCartContent()[1] + getCostLivrare() - getDiscount()
+    return getCartContent()[1] + getCostLivrare() - getDiscount()
   }
 
   useEffect(() => {
@@ -303,7 +304,7 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
         </Typography>
         <Grid sx={{ marginLeft: "20px", marginTop: "30px" }}>
           {getCurrentCart().length > 0 &&
-          getCurrentCart()[0].produse.length > 0 ? (
+            getCurrentCart()[0].produse.length > 0 ? (
             <div
               style={{
                 display: "flex",
@@ -315,7 +316,7 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                    width: "50%",
+                  width: "50%",
                   marginRight: '15%'
                 }}
               >
@@ -421,7 +422,7 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
                               }}
                             >
                               {getFavProductModal(produsInCart.idProdus) ===
-                              "isFav" ? (
+                                "isFav" ? (
                                 <Button
                                   sx={{ width: "fit-content" }}
                                   type="text"
@@ -570,8 +571,8 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
                       >
                         {getDiscount()} lei
                       </Typography>
-                      </div>
-                      <Divider/>
+                    </div>
+                    <Divider />
                     <div
                       style={{
                         display: "flex",
@@ -598,6 +599,12 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
                         {getValoareTotala()} lei
                       </Typography>
                     </div>
+                    <Alert
+                      sx={{ marginTop: "20px", width: "fit-content" }}
+                      severity="info"
+                    >
+                      Taxele de livrare se aplica la comenzi sub 200 de lei
+                    </Alert>
                   </CardContent>
                   <CardActions sx={{ justifyContent: "center" }}>
                     <Button component={Link} to={"/finalizarecomanda"}>
@@ -607,37 +614,15 @@ return getCartContent()[1] + getCostLivrare() - getDiscount()
                 </Card>
 
                 <Card sx={{ minWidth: 280, marginTop: "40px" }}>
-                  <CardContent>
-                    <TextField
-                      label="Cod promotional"
-                      type="text"
-                      variant="standard"
-                      value={promoCode}
-                      onChange={changePromoCode}
-                    />
-                  </CardContent>
-                  <CardActions sx={{ justifyContent: "center" }}>
-                    <Button onClick={aplicaCodPromotional}>
-                      Aplica cod promotional
-                    </Button>
-                  </CardActions>
-                  {promoCodeFinal !== "eok" && promoCodeFinal !== 'nue' ? (
-                    <Typography sx={{ color: "red" }}>
-                      Acest cod promotional nu exista
-                    </Typography>
-                  ) : null}
-                </Card>
-
-                <Card sx={{ minWidth: 280, marginTop: "40px" }}>
-                  <CardContent sx={{textAlign: 'left'}}>
-                    <Typography sx={{marginBottom: '18px', fontWeight: 700, fontSize: '20px'}} component="div">
+                  <CardContent sx={{ textAlign: 'left' }}>
+                    <Typography sx={{ marginBottom: '18px', fontWeight: 700, fontSize: '20px' }} component="div">
                       Ai nevoie de asistenta?
                     </Typography>
-                      <Typography sx={{ marginBottom: '7px', fontSize: '19px' }} component="div">
+                    <Typography sx={{ marginBottom: '7px', fontSize: '19px' }} component="div">
                       0723629223
                     </Typography>
-                      <Typography sx={{ fontSize: '19px' }} component="div">
-                     dabeauty@gmail.com
+                    <Typography sx={{ fontSize: '19px' }} component="div">
+                      dabeauty@gmail.com
                     </Typography>
                   </CardContent>
                 </Card>

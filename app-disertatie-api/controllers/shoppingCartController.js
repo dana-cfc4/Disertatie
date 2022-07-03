@@ -5,9 +5,9 @@ getCarts = async (req, res) => {
     const carts = await Cart.find({});
     !carts.length
       ? res.status(402).json({
-          success: false,
-          message: "There are no carts to display",
-        })
+        success: false,
+        message: "There are no carts to display",
+      })
       : res.status(200).json({ success: true, data: carts });
   } catch (err) {
     return res.status(400).json({
@@ -47,6 +47,7 @@ updateCart = async (req, res) => {
   try {
     const body = req.body;
     const cart = await Cart.findOne({ _id: req.params.id });
+
     if (body !== null) {
       Object.assign(cart, body);
       await cart.save();

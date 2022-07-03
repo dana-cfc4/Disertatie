@@ -54,7 +54,8 @@ signup = async (req, res) => {
             password: bcrypt.hashSync(req.body.password, 8),
             phoneNumber: req.body.phoneNumber,
             role: req.body.role,
-            birthday: req.body.birthday
+            birthday: req.body.birthday,
+            puncteFidelitate: req.body.puncteFidelitate
           });
 
           await userToAdd.save();
@@ -142,4 +143,29 @@ signin = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUserById, signup, signin };
+updateUser = async (req, res) => {
+  try {
+    const body = req.body;
+    const user = await User.findOne({ _id: req.params.id });
+    if (body !== null) {
+      Object.assign(user, body);
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        id: user._id,
+        editedUser: user,
+        message: "User updated!",
+      });
+    } else {
+      throw new Error("You must provide user information");
+    }
+  } catch (error) {
+    return res.status(404).json({
+      errorMessage: error.message,
+      error,
+      message: "User update did not succeed!",
+    });
+  }
+};
+
+module.exports = { getUsers, getUserById, signup, signin, updateUser };

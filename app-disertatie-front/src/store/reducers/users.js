@@ -11,9 +11,16 @@ export default function addUser(state = initialState, action) {
         usersList: action.users,
       };
     case "AUTHENTICATE":
-        return { ...state, users: action.user };
+      return { ...state, users: action.user };
     case "SIGN_OUT":
       return { ...state, users: null };
+    case "EDIT_USER":
+      return {
+        ...state,
+        usersList: state.usersList.map((user) =>
+          user._id === action.user._id ? action.user : user
+        ),
+      };
     default:
       return state;
   }
