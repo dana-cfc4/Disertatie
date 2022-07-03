@@ -22,6 +22,7 @@
     "awesomplete": "^1.1.5",
     "axios": "^0.27.2",
     "date-fns": "^2.28.0",
+    "emailjs-com": "^3.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "papaparse": "^5.3.2",
