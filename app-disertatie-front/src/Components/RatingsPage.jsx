@@ -55,7 +55,7 @@ const RatingsPage = ({ currentProduct, sendRating, ratingToEdit }) => {
         rating: parseInt(givenRating),
         data: new Date(),
       };
-      dispatch(addRating("http://localhost:8080/ratings", review));
+      dispatch(addRating("https://backend-r4zkv.ondigitalocean.app/ratings", review));
     } else {
       const review = {
         idProdus: currentProduct._id,
@@ -63,7 +63,7 @@ const RatingsPage = ({ currentProduct, sendRating, ratingToEdit }) => {
         rating: parseInt(givenRating),
         data: new Date(),
       };
-      dispatch(addRating("http://localhost:8080/ratings", review));
+      dispatch(addRating("https://backend-r4zkv.ondigitalocean.app/ratings", review));
     }
     sendRating()
   };
@@ -81,7 +81,7 @@ const RatingsPage = ({ currentProduct, sendRating, ratingToEdit }) => {
     };
     dispatch(
       editRating(
-        `http://localhost:8080/ratings/${ratingToEdit._id}`,
+        `https://backend-r4zkv.ondigitalocean.app/ratings/${ratingToEdit._id}`,
         review
       )
     );

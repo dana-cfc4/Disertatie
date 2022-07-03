@@ -336,7 +336,7 @@ const Checkout = () => {
 
     if (!error) {
       axios
-        .post("http://localhost:8080/api/stripe/charge", {
+        .post("https://backend-r4zkv.ondigitalocean.app/api/stripe/charge", {
           token: token.id,
           currency: "RON",
           price: getValoareTotala(),
@@ -378,9 +378,9 @@ const Checkout = () => {
       };
       if (auth) {
         let userCurrentOrder = { ...currentOrder, idUtilizator: auth._id };
-        dispatch(addOrder("http://localhost:8080/orders", userCurrentOrder));
+        dispatch(addOrder("https://backend-r4zkv.ondigitalocean.app/orders", userCurrentOrder));
       } else {
-        dispatch(addOrder("http://localhost:8080/orders", currentOrder));
+        dispatch(addOrder("https://backend-r4zkv.ondigitalocean.app/orders", currentOrder));
       }
 
       if (auth && auth._id) {
@@ -395,13 +395,13 @@ const Checkout = () => {
         setPromoCodeGiven('PR' + auth._id)
         const takenPoints = currentUserData.puncteFidelitate >= 50 ? 50 : 0
         const updatedCurrentUserData = { ...currentUserData, puncteFidelitate: parseInt(currentUserData.puncteFidelitate) + valoarePuncte - takenPoints }
-        dispatch(editUser(`http://localhost:8080/users/${auth._id}`,
+        dispatch(editUser(`https://backend-r4zkv.ondigitalocean.app/users/${auth._id}`,
           updatedCurrentUserData))
         const currentUserCart = getCurrentCart()
         currentUserCart[0].produse.length = 0
         dispatch(
           editCart(
-            `http://localhost:8080/shoppingCart/${currentUserCart[0]._id}`,
+            `https://backend-r4zkv.ondigitalocean.app/shoppingCart/${currentUserCart[0]._id}`,
             currentUserCart[0]
           )
         );
@@ -563,10 +563,10 @@ const Checkout = () => {
   }
 
   useEffect(() => {
-    dispatch(setProducts("http://localhost:8080/products"));
-    dispatch(setCarts("http://localhost:8080/shoppingCart"));
-    dispatch(setUsers("http://localhost:8080/users"));
-    dispatch(setOrders("http://localhost:8080/orders"));
+    dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+    dispatch(setCarts("https://backend-r4zkv.ondigitalocean.app/shoppingCart"));
+    dispatch(setUsers("https://backend-r4zkv.ondigitalocean.app/users"));
+    dispatch(setOrders("https://backend-r4zkv.ondigitalocean.app/orders"));
   }, []);
 
   return (

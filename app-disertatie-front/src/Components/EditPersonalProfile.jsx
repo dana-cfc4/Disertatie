@@ -53,7 +53,7 @@ export default function EditPersonalProfile({ currentUser, onEditProfile }) {
   const editCurrentUser = () => {
     if (firstName && lastName && emailAddress && phoneNumber) {
       const updatedCurrentUserData = { ...currentUser, firstName: firstName, lastName: lastName, emailAddress: emailAddress, phoneNumber: phoneNumber, birthday: birthday }
-      dispatch(editUser(`http://localhost:8080/users/${auth._id}`,
+      dispatch(editUser(`https://backend-r4zkv.ondigitalocean.app/users/${auth._id}`,
         updatedCurrentUserData))
       onEditProfile()
     }

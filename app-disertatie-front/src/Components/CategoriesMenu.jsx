@@ -51,7 +51,7 @@ const CategoriesMenu = () => {
   // };
   // const addNewSubCategory = () => {
   //   dispatch(
-  //     addSubCategory("http://localhost:8080/subcategories", subcategory)
+  //     addSubCategory("https://backend-r4zkv.ondigitalocean.app/subcategories", subcategory)
   //   );
   // };
 
@@ -66,7 +66,7 @@ const CategoriesMenu = () => {
   //   idSubCategorie,
   // };
   // const addNewSubSubCategory = () => {
-  //   dispatch(addSubSubCategory("http://localhost:8080/subsubcategories", subcategory1));
+  //   dispatch(addSubSubCategory("https://backend-r4zkv.ondigitalocean.app/subsubcategories", subcategory1));
   // };
 
   const handleClick = (event, page) => {
@@ -94,9 +94,9 @@ const CategoriesMenu = () => {
   };
 
   useEffect(() => {
-    dispatch(setCategories("http://localhost:8080/categories"));
-    dispatch(setSubCategories("http://localhost:8080/subcategories"));
-    dispatch(setSubSubCategories("http://localhost:8080/subsubcategories"));
+    dispatch(setCategories("https://backend-r4zkv.ondigitalocean.app/categories"));
+    dispatch(setSubCategories("https://backend-r4zkv.ondigitalocean.app/subcategories"));
+    dispatch(setSubSubCategories("https://backend-r4zkv.ondigitalocean.app/subsubcategories"));
   }, []);
 
   return (

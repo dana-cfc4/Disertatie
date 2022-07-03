@@ -438,9 +438,9 @@ const MyOrders = () => {
 
   useEffect(() => {
     if (prevOrders === undefined) {
-      dispatch(setProducts("http://localhost:8080/products"));
-      dispatch(setBrands("http://localhost:8080/brands"));
-      dispatch(setOrders("http://localhost:8080/orders"));
+      dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+      dispatch(setBrands("https://backend-r4zkv.ondigitalocean.app/brands"));
+      dispatch(setOrders("https://backend-r4zkv.ondigitalocean.app/orders"));
     }
     if (JSON.stringify(prevOrders) !== JSON.stringify(orders) ||
       JSON.stringify(prevSelectedDate) !== JSON.stringify(selectedDate) ||

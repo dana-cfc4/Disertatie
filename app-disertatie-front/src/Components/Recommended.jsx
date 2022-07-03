@@ -241,7 +241,7 @@ const Recommended = ({ buget }) => {
     );
     dispatch(
       editCart(
-        `http://localhost:8080/shoppingCart/${currentUserCart._id}`,
+        `https://backend-r4zkv.ondigitalocean.app/shoppingCart/${currentUserCart._id}`,
         cartOfUser
       )
     );

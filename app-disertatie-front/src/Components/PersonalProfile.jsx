@@ -48,7 +48,7 @@ const PersonalProfile = () => {
     }
 
     useEffect(() => {
-        dispatch(setUsers("http://localhost:8080/users"));
+        dispatch(setUsers("https://backend-r4zkv.ondigitalocean.app/users"));
     }, []);
 
     return (

@@ -85,7 +85,7 @@ const CategoriesPage = () => {
   };
   const addNewSpecification = () => {
     dispatch(
-      addSpecification("http://localhost:8080/specifications", specification)
+      addSpecification("https://backend-r4zkv.ondigitalocean.app/specifications", specification)
     );
   };
   const [anchorElSortingMenu, setAnchorElSortingMenu] = useState(null);
@@ -536,7 +536,7 @@ const CategoriesPage = () => {
         idUtilizator: auth._id,
       };
       dispatch(
-        addFavorite("http://localhost:8080/favorites", favoriteWithUser)
+        addFavorite("https://backend-r4zkv.ondigitalocean.app/favorites", favoriteWithUser)
       );
     } else {
       const favorite = {
@@ -554,7 +554,7 @@ const CategoriesPage = () => {
           favorite.idUtilizator === auth._id
       );
       dispatch(
-        deleteFavorite(`http://localhost:8080/favorites/${fav._id}`, fav)
+        deleteFavorite(`https://backend-r4zkv.ondigitalocean.app/favorites/${fav._id}`, fav)
       );
     } else {
       const favorite = {
@@ -1355,7 +1355,7 @@ const CategoriesPage = () => {
           };
           dispatch(
             editCart(
-              `http://localhost:8080/shoppingCart/${currentUserCart._id}`,
+              `https://backend-r4zkv.ondigitalocean.app/shoppingCart/${currentUserCart._id}`,
               cartOfUser
             )
           );
@@ -1369,7 +1369,7 @@ const CategoriesPage = () => {
             produse: produseToAdd,
             idUtilizator: auth._id,
           };
-          dispatch(addCart("http://localhost:8080/shoppingCart", cartOfUser));
+          dispatch(addCart("https://backend-r4zkv.ondigitalocean.app/shoppingCart", cartOfUser));
           handleCloseQuickViewModal();
           setOpenMiniCartModal(true);
         }
@@ -1468,12 +1468,12 @@ const CategoriesPage = () => {
   };
 
   useEffect(() => {
-    dispatch(setProducts("http://localhost:8080/products"));
-    dispatch(setRatings("http://localhost:8080/ratings"));
-    dispatch(setBrands("http://localhost:8080/brands"));
-    dispatch(setSpecifications("http://localhost:8080/specifications"));
-    dispatch(setFavorites("http://localhost:8080/favorites"));
-    dispatch(setCarts("http://localhost:8080/shoppingCart"));
+    dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+    dispatch(setRatings("https://backend-r4zkv.ondigitalocean.app/ratings"));
+    dispatch(setBrands("https://backend-r4zkv.ondigitalocean.app/brands"));
+    dispatch(setSpecifications("https://backend-r4zkv.ondigitalocean.app/specifications"));
+    dispatch(setFavorites("https://backend-r4zkv.ondigitalocean.app/favorites"));
+    dispatch(setCarts("https://backend-r4zkv.ondigitalocean.app/shoppingCart"));
   }, []);
 
   return (

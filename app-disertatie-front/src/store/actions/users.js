@@ -1,6 +1,6 @@
 export function setUsers() {
   return (dispatch) => {
-    return fetch("http://localhost:8080/users", {
+    return fetch("https://backend-r4zkv.ondigitalocean.app/users", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -16,7 +16,7 @@ export function setUsers() {
 
 export function signUp(body) {
   return (dispatch) => {
-    return fetch("http://localhost:8080/users/signup", {
+    return fetch("https://backend-r4zkv.ondigitalocean.app/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export function signUp(body) {
 
 export function signIn(body) {
   return (dispatch) => {
-    return fetch("http://localhost:8080/users/signin", {
+    return fetch("https://backend-r4zkv.ondigitalocean.app/users/signin", {
       credentials: "same-origin",
       method: "POST",
       headers: {

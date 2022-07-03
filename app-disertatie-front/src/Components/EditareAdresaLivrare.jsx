@@ -65,7 +65,7 @@ export default function EditAdresaLivrare({ currentUser, onEditProfile }) {
 
   const editCurrentUser = () => {
     const updatedCurrentUserData = { ...currentUser, county: county, city: city, sector: sector, streetName: streetName, streetNumber: streetNumber, bloc: bloc, scara: scara, apartmentNumber: apartmentNumber, etaj: etaj }
-    dispatch(editUser(`http://localhost:8080/users/${auth._id}`,
+    dispatch(editUser(`https://backend-r4zkv.ondigitalocean.app/users/${auth._id}`,
       updatedCurrentUserData))
     onEditProfile()
   }

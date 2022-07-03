@@ -243,7 +243,7 @@ const PrincipalPage = () => {
                 idUtilizator: auth._id,
             };
             dispatch(
-                addFavorite("http://localhost:8080/favorites", favoriteWithUser)
+                addFavorite("https://backend-r4zkv.ondigitalocean.app/favorites", favoriteWithUser)
             );
         } else {
             const favorite = {
@@ -261,7 +261,7 @@ const PrincipalPage = () => {
                     favorite.idUtilizator === auth._id
             );
             dispatch(
-                deleteFavorite(`http://localhost:8080/favorites/${fav._id}`, fav)
+                deleteFavorite(`https://backend-r4zkv.ondigitalocean.app/favorites/${fav._id}`, fav)
             );
         } else {
             const favorite = {
@@ -313,7 +313,7 @@ const PrincipalPage = () => {
                     };
                     dispatch(
                         editCart(
-                            `http://localhost:8080/shoppingCart/${currentUserCart._id}`,
+                            `https://backend-r4zkv.ondigitalocean.app/shoppingCart/${currentUserCart._id}`,
                             cartOfUser
                         )
                     );
@@ -327,7 +327,7 @@ const PrincipalPage = () => {
                         produse: produseToAdd,
                         idUtilizator: auth._id,
                     };
-                    dispatch(addCart("http://localhost:8080/shoppingCart", cartOfUser));
+                    dispatch(addCart("https://backend-r4zkv.ondigitalocean.app/shoppingCart", cartOfUser));
                     handleCloseQuickViewModal()
                     setOpenMiniCartModal(true);
                 }
@@ -577,12 +577,12 @@ const PrincipalPage = () => {
     }
 
     useEffect(() => {
-        dispatch(setProducts("http://localhost:8080/products"));
-        dispatch(setRatings("http://localhost:8080/ratings"));
-        dispatch(setBrands("http://localhost:8080/brands"));
-        dispatch(setFavorites("http://localhost:8080/favorites"));
-        dispatch(setCarts("http://localhost:8080/shoppingCart"));
-        dispatch(setOrders("http://localhost:8080/orders"));
+        dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+        dispatch(setRatings("https://backend-r4zkv.ondigitalocean.app/ratings"));
+        dispatch(setBrands("https://backend-r4zkv.ondigitalocean.app/brands"));
+        dispatch(setFavorites("https://backend-r4zkv.ondigitalocean.app/favorites"));
+        dispatch(setCarts("https://backend-r4zkv.ondigitalocean.app/shoppingCart"));
+        dispatch(setOrders("https://backend-r4zkv.ondigitalocean.app/orders"));
     }, []);
 
     return (

@@ -205,11 +205,11 @@ const RecommendedPrincipalPage = () => {
 
   useEffect(() => {
     if (prevOrders === undefined) {
-      dispatch(setRatings("http://localhost:8080/ratings"));
-      dispatch(setProducts("http://localhost:8080/products"));
-      dispatch(setBrands("http://localhost:8080/brands"));
-      dispatch(setOrders("http://localhost:8080/orders"));
-      dispatch(setCarts("http://localhost:8080/shoppingCart"));
+      dispatch(setRatings("https://backend-r4zkv.ondigitalocean.app/ratings"));
+      dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+      dispatch(setBrands("https://backend-r4zkv.ondigitalocean.app/brands"));
+      dispatch(setOrders("https://backend-r4zkv.ondigitalocean.app/orders"));
+      dispatch(setCarts("https://backend-r4zkv.ondigitalocean.app/shoppingCart"));
     }
     if (JSON.stringify(prevOrders) !== JSON.stringify(orders)
     ) {

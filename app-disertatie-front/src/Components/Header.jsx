@@ -113,13 +113,13 @@ const Header = () => {
   const { brands } = useSelector(selectBrands);
 
   useEffect(() => {
-    dispatch(setFavorites("http://localhost:8080/favorites"));
-    dispatch(setCarts("http://localhost:8080/shoppingCart"));
-    dispatch(setProducts("http://localhost:8080/products"));
-    dispatch(setCategories("http://localhost:8080/categories"));
-    dispatch(setSubCategories("http://localhost:8080/subcategories"));
-    dispatch(setSubSubCategories("http://localhost:8080/subsubcategories"));
-    dispatch(setBrands("http://localhost:8080/brands"));
+    dispatch(setFavorites("https://backend-r4zkv.ondigitalocean.app/favorites"));
+    dispatch(setCarts("https://backend-r4zkv.ondigitalocean.app/shoppingCart"));
+    dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+    dispatch(setCategories("https://backend-r4zkv.ondigitalocean.app/categories"));
+    dispatch(setSubCategories("https://backend-r4zkv.ondigitalocean.app/subcategories"));
+    dispatch(setSubSubCategories("https://backend-r4zkv.ondigitalocean.app/subsubcategories"));
+    dispatch(setBrands("https://backend-r4zkv.ondigitalocean.app/brands"));
   }, []);
 
 

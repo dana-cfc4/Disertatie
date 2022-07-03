@@ -82,7 +82,7 @@ const MyReviews = () => {
 
   const deleteCurrentRating = (rating) => {
     dispatch(
-      deleteRating(`http://localhost:8080/ratings/${rating._id}`, rating)
+      deleteRating(`https://backend-r4zkv.ondigitalocean.app/ratings/${rating._id}`, rating)
     );
   };
 
@@ -96,8 +96,8 @@ const MyReviews = () => {
   };
 
   useEffect(() => {
-    dispatch(setProducts("http://localhost:8080/products"));
-    dispatch(setRatings("http://localhost:8080/ratings"));
+    dispatch(setProducts("https://backend-r4zkv.ondigitalocean.app/products"));
+    dispatch(setRatings("https://backend-r4zkv.ondigitalocean.app/ratings"));
   }, []);
 
   return (

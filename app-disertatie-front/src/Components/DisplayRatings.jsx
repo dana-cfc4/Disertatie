@@ -73,7 +73,7 @@ const DisplayRatings = ({
 
   const deleteCurrentRating = (rating) => {
     dispatch(
-      deleteRating(`http://localhost:8080/ratings/${rating._id}`, rating)
+      deleteRating(`https://backend-r4zkv.ondigitalocean.app/ratings/${rating._id}`, rating)
     );
   };
 
