@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const PORT = 8081;
+const PORT = 8080;
 
 const createError = require("http-errors");
 const express = require("express");
@@ -88,7 +88,7 @@ app.post("/api/stripe/charge", async (req, resp) => {
 });
 
 app.use(function (req, res, next) {
-  next(createError(404));
+  // next(createError(404));
 });
 
 app.listen(PORT, () =>
