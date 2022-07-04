@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.react-chatbot-kit-chat-container {
+  width: 350px !important;
+  z-index: 999;
+  top: 100%;
+  left: 100%;
+  margin-top: -575px;
+  margin-left: -350px;
+  overflow: auto;
+  position: fixed !important;
+}

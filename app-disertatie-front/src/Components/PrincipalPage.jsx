@@ -564,7 +564,6 @@ const PrincipalPage = () => {
 
     const onClick = (event) => {
         const denumirePoza = (event.target.src.substring(event.target.src.lastIndexOf('media/') + 6).slice(0, 9))
-        console.log(denumirePoza)
         if (denumirePoza === 'carousel4') {
             navigate('./categorii/627a9a33f9147b3158ac6f41');
         }
