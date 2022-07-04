@@ -8,8 +8,8 @@ getUsers = async (req, res) => {
     const users = await User.find({});
     !users.length
       ? res
-          .status(404)
-          .json({ success: false, error: "There are no users to display" })
+        .status(404)
+        .json({ success: false, error: "There are no users to display" })
       : res.status(200).json({ success: true, data: users });
   } catch (err) {
     return res
@@ -62,7 +62,7 @@ signup = async (req, res) => {
           var token = jwt.sign({ id: userToAdd._id }, config.secret, {
             expiresIn: 86400,
           });
-          
+
           return res.status(201).json({
             success: true,
             accessToken: token,
@@ -108,7 +108,7 @@ signin = async (req, res) => {
           return res.status(400).json({
             success: false,
             message:
-              "Email and password combo did not match any existent user!",
+              "Nu exista un utilizator cu aceste credentiale!",
           });
         } else {
           let token = jwt.sign({ id: user._id }, config.secret, {
@@ -128,7 +128,7 @@ signin = async (req, res) => {
       } else {
         res.status(400).json({
           success: false,
-          message: "Email and password combo did not match any existent user!",
+          message: "Nu exista un utilizator cu aceste credentiale!",
         });
       }
     } else {
