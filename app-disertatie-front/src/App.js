@@ -16,7 +16,7 @@ import config from './config';
 
 
 function App() {
-  const [isChatBotDisplayed, setIsChatBotDisplayed] = useState(true)
+  const [isChatBotDisplayed, setIsChatBotDisplayed] = useState(false)
   const showChatbot = () => {
     setIsChatBotDisplayed(!isChatBotDisplayed)
   }
