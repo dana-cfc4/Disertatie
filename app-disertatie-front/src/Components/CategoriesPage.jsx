@@ -1323,7 +1323,7 @@ const CategoriesPage = () => {
       produs["culoare"] = Object.keys(color)[0];
       produs["cantitate"] = quantity;
 
-      if (auth) {
+      if (auth && carts) {
         const currentUserCart = carts.find(
           (cart) => cart.idUtilizator === auth._id
         );
