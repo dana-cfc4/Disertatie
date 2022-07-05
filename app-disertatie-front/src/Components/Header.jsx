@@ -125,7 +125,7 @@ const Header = () => {
 
   const getCartContent = () => {
     let nrProducts = 0
-    if (auth && auth._id) {
+    if (auth && auth._id && carts && carts.length > 0) {
       let currentUserCarts = carts.find((cart) => cart.idUtilizator === auth._id)
       if (currentUserCarts)
         currentUserCarts.produse.map(produs => {

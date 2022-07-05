@@ -368,7 +368,7 @@ const MyOrderedProducts = () => {
   const getCartContent = () => {
     let nrProducts = 0;
     let valoareCos = 0;
-    if (auth && auth._id) {
+    if (auth && auth._id && carts) {
       let currentUserCarts = carts.find(
         (cart) => cart.idUtilizator === auth._id
       );

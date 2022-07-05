@@ -125,7 +125,7 @@ const MyReviews = () => {
                 // display="flex"
                 justifyContent="center"
                 alignItems="center"
-                key={rating._id} style={{ display: 'inline-flex', flexDirection: 'row', width: '50%' }}
+                key={rating?._id} style={{ display: 'inline-flex', flexDirection: 'row', width: '50%' }}
               >
                 <Card
                   sx={{
@@ -136,12 +136,12 @@ const MyReviews = () => {
                     marginRight: "20px",
                   }}
                 >
-                  <CardActionArea as={Link} to={`/produse/${getProduct(rating.idProdus)._id}`}>
+                  <CardActionArea as={Link} to={`/produse/${getProduct(rating?.idProdus)?._id}`}>
                     <CardMedia
                       component="img"
                       height="340"
-                      image={Object.values(getProduct(rating.idProdus).imagini[0])[0][0]}
-                      alt={getProduct(rating.idProdus).denumire}
+                      image={Object.values(getProduct(rating?.idProdus)?.imagini[0])[0][0]}
+                      alt={getProduct(rating?.idProdus)?.denumire}
                       style={{
                         display: "inline - block",
                         position: "relative",
@@ -151,14 +151,14 @@ const MyReviews = () => {
                   </CardActionArea>
                   <CardActionArea
                     as={Link}
-                    to={`/produse/${getProduct(rating.idProdus)._id}`}
+                    to={`/produse/${getProduct(rating?.idProdus)._id}`}
                     sx={{ textDecoration: "none", color: "black" }}
                   >
                     <CardContent
                       sx={{ textAlign: "justify", marginLeft: "7px" }}
                     >
                       <Typography sx={{ fontSize: "16px" }}>
-                        {getProduct(rating.idProdus).denumire}
+                        {getProduct(rating?.idProdus).denumire}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -169,7 +169,7 @@ const MyReviews = () => {
                       <div>
                         <Rating
                           name="read-only"
-                          value={rating.rating}
+                          value={rating?.rating}
                           precision={0.5}
                           readOnly
                           size="large"
@@ -177,7 +177,7 @@ const MyReviews = () => {
                         />
                         <Typography
                           sx={{ fontSize: "14px" }}
-                        >{`${getCorrectFormatOfDate(rating.data)}`}</Typography>
+                        >{`${getCorrectFormatOfDate(rating?.data)}`}</Typography>
                       </div>
                     }
                     secondary={
@@ -192,9 +192,9 @@ const MyReviews = () => {
                           <Typography
                             sx={{ textAlign: "justify", marginLeft: "5px" }}
                           >
-                            {rating.comentariu}
+                            {rating?.comentariu}
                           </Typography>
-                          {auth && auth._id === rating.idUtilizator ? (
+                          {auth && auth._id === rating?.idUtilizator ? (
                             <div
                               style={{ display: "flex", flexDirection: "row" }}
                             >
@@ -204,7 +204,7 @@ const MyReviews = () => {
                                   color: "rgb(46, 59, 85)",
                                   fontWeight: "750",
                                 }}
-                                onClick={() => goToEditMode(rating, getProduct(rating.idProdus))}
+                                onClick={() => goToEditMode(rating, getProduct(rating?.idProdus))}
                               >
                                 Editează
                               </Button>

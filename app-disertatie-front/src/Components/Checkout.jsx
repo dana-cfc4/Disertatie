@@ -68,7 +68,7 @@ const Checkout = () => {
   const getCartContent = () => {
     let nrProducts = 0;
     let valoareCos = 0;
-    if (auth && auth._id) {
+    if (auth && auth._id && carts) {
       let currentUserCarts = carts.find(
         (cart) => cart.idUtilizator === auth._id
       );
@@ -95,7 +95,7 @@ const Checkout = () => {
   };
 
   const getCurrentCart = () => {
-    if (auth) {
+    if (auth && carts) {
       return carts.filter((cart) => cart.idUtilizator === auth._id);
     } else return currentSessionCarts;
   };

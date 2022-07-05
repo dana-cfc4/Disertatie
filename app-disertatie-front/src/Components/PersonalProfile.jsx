@@ -65,22 +65,22 @@ const PersonalProfile = () => {
                         <Divider sx={{ borderBottomWidth: 3, borderColor: 'black' }} />
                         <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Nume</Typography>
-                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().firstName ? currentUser().firstName : '-'} {currentUser().lastName ? currentUser().lastName : '-'}</Typography>
+                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().firstName ? currentUser().firstName : '-'} {currentUser() && currentUser().lastName ? currentUser().lastName : '-'}</Typography>
                         </div>
                         <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                         <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Email</Typography>
-                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().emailAddress ? currentUser().emailAddress : '-'}</Typography>
+                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().emailAddress ? currentUser().emailAddress : '-'}</Typography>
                         </div>
                         <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                         <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Numar de telefon</Typography>
-                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().phoneNumber ? currentUser().phoneNumber : '-'}</Typography>
+                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().phoneNumber ? currentUser().phoneNumber : '-'}</Typography>
                         </div>
                         <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                         <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Ziua de nastere</Typography>
-                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{getCorrectFormatOfDate(currentUser().birthday) ? getCorrectFormatOfDate(currentUser().birthday) : '-'}</Typography>
+                            <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && getCorrectFormatOfDate(currentUser().birthday) ? getCorrectFormatOfDate(currentUser().birthday) : '-'}</Typography>
                         </div>
                         <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                         <Button
@@ -107,47 +107,47 @@ const PersonalProfile = () => {
                             <Divider sx={{ borderBottomWidth: 3, borderColor: 'black' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Judet</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().county ? currentUser().county : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().county ? currentUser().county : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Oras</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().city ? currentUser().city : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().city ? currentUser().city : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Sector</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().sector ? currentUser().sector : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().sector ? currentUser().sector : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Strada</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().streetName ? currentUser().streetName : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().streetName ? currentUser().streetName : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Numarul strazii</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().streetNumber ? currentUser().streetNumber : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().streetNumber ? currentUser().streetNumber : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Bloc</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().bloc ? currentUser().bloc : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().bloc ? currentUser().bloc : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Scara</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().scara ? currentUser().scara : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().scara ? currentUser().scara : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Numarul locuintei</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().apartmentNumber ? currentUser().apartmentNumber : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().apartmentNumber ? currentUser().apartmentNumber : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <div style={{ marginTop: '40px', marginLeft: '40px', marginBottom: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{ fontSize: '22px', fontWeight: 600 }}>Etaj</Typography>
-                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser().etaj ? currentUser().etaj : '-'}</Typography>
+                                <Typography sx={{ fontSize: '20px', marginRight: '5%' }}>{currentUser() && currentUser().etaj ? currentUser().etaj : '-'}</Typography>
                             </div>
                             <Divider sx={{ marginBottom: '40px', marginTop: '40px' }} />
                             <Button

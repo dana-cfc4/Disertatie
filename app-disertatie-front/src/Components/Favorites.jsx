@@ -103,7 +103,7 @@ const Favorites = () => {
       produs["culoare"] = Object.keys(color)[0];
       produs["cantitate"] = quantity;
 
-      if (auth && auth._id) {
+      if (auth && auth._id && carts) {
         const currentUserCart = carts.find(
           (cart) => cart.idUtilizator === auth._id
         );
@@ -354,7 +354,7 @@ const Favorites = () => {
   const getCartContent = () => {
     let nrProducts = 0;
     let valoareCos = 0;
-    if (auth && auth._id) {
+    if (auth && auth._id && carts) {
       let currentUserCarts = carts.find(
         (cart) => cart.idUtilizator === auth._id
       );

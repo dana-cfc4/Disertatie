@@ -298,7 +298,7 @@ const CategoriesPage = () => {
       const subcategorieParent = subcategories.find(
         (subcategory) => subcategory._id === subsubcategory.idSubCategorie
       )
-      const subcategorieParentId = subcategorieParent.idCategorie;
+      const subcategorieParentId = subcategorieParent?.idCategorie;
       const numeCategorie = categories.find(
         (category) => category._id === subcategorieParentId
       );
@@ -1441,7 +1441,7 @@ const CategoriesPage = () => {
   const getCartContent = () => {
     let nrProducts = 0;
     let valoareCos = 0;
-    if (auth && auth._id) {
+    if (auth && auth._id && carts) {
       let currentUserCarts = carts.find(
         (cart) => cart.idUtilizator === auth._id
       );
@@ -1480,18 +1480,18 @@ const CategoriesPage = () => {
     <>
       <Grid sx={firstDivStyle}>
         {categories
-          .filter((category) => category._id === params.idCategorie)
+          .filter((category) => category && category._id === params.idCategorie)
           .map((category) => (
-            <Typography sx={{ marginLeft: "20px", p: 1.5 }} key={category._id}>
-              {category.nume}
+            <Typography sx={{ marginLeft: "20px", p: 1.5 }} key={category?._id}>
+              {category?.nume}
             </Typography>
           ))}
         {subcategories
-          .filter((subcategory) => subcategory._id === params.idCategorie)
+          .filter((subcategory) => subcategory && subcategory._id === params.idCategorie)
           .map((subcategory) => (
             <div
               style={{ display: "flex", flexDirection: "row" }}
-              key={subcategory._id}
+              key={subcategory?._id}
             >
               <Typography
                 sx={{
@@ -1501,24 +1501,24 @@ const CategoriesPage = () => {
                   textColor: "black",
                 }}
                 as={Link}
-                to={`/categorii/${subcategory.idCategorie}`}
+                to={`/categorii/${subcategory?.idCategorie}`}
               >
                 {categories.length > 0
                   ? categories.filter(
-                    (category) => category._id === subcategory.idCategorie
+                    (category) => category && category._id === subcategory.idCategorie
                   )[0].nume
                   : null}
               </Typography>
               <Typography sx={{ p: 1 }}>{">"}</Typography>
-              <Typography sx={{ p: 1 }}>{subcategory.nume}</Typography>
+              <Typography sx={{ p: 1 }}>{subcategory?.nume}</Typography>
             </div>
           ))}
         {subsubcategories
-          .filter((subsubcategory) => subsubcategory._id === params.idCategorie)
+          .filter((subsubcategory) => subsubcategory && subsubcategory._id === params.idCategorie)
           .map((subsubcategory) => (
             <div
               style={{ display: "flex", flexDirection: "row" }}
-              key={subsubcategory._id}
+              key={subsubcategory?._id}
             >
               <Typography
                 sx={{
@@ -1528,9 +1528,9 @@ const CategoriesPage = () => {
                   textColor: "black",
                 }}
                 as={Link}
-                to={`/categorii/${getIdCategorie(subsubcategory)._id}`}
+                to={`/categorii/${getIdCategorie(subsubcategory)?._id}`}
               >
-                {getIdCategorie(subsubcategory).nume}
+                {getIdCategorie(subsubcategory)?.nume}
               </Typography>
               <Typography sx={{ p: 1 }}>{">"}</Typography>
               <Typography
@@ -1540,17 +1540,17 @@ const CategoriesPage = () => {
                   textColor: "black",
                 }}
                 as={Link}
-                to={`/categorii/${subsubcategory.idSubCategorie}`}
+                to={`/categorii/${subsubcategory?.idSubCategorie}`}
               >
                 {
                   subcategories.find(
-                    (subcategory) =>
+                    (subcategory) => subcategory &&
                       subcategory._id === subsubcategory.idSubCategorie
                   ).nume
                 }
               </Typography>
               <Typography sx={{ p: 1 }}>{">"}</Typography>
-              <Typography sx={{ p: 1 }}>{subsubcategory.nume}</Typography>
+              <Typography sx={{ p: 1 }}>{subsubcategory?.nume}</Typography>
             </div>
           ))}
         <div
