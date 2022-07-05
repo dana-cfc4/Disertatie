@@ -140,7 +140,7 @@ const MyReviews = () => {
                     <CardMedia
                       component="img"
                       height="340"
-                      image={Object.values(getProduct(rating?.idProdus)?.imagini[0])[0][0]}
+                      image={rating && rating.idProdus && getProduct(rating?.idProdus)?.imagini[0] ? Object.values(getProduct(rating?.idProdus)?.imagini[0])[0][0] : ''}
                       alt={getProduct(rating?.idProdus)?.denumire}
                       style={{
                         display: "inline - block",
@@ -151,14 +151,14 @@ const MyReviews = () => {
                   </CardActionArea>
                   <CardActionArea
                     as={Link}
-                    to={`/produse/${getProduct(rating?.idProdus)._id}`}
+                    to={`/produse/${getProduct(rating?.idProdus)?._id}`}
                     sx={{ textDecoration: "none", color: "black" }}
                   >
                     <CardContent
                       sx={{ textAlign: "justify", marginLeft: "7px" }}
                     >
                       <Typography sx={{ fontSize: "16px" }}>
-                        {getProduct(rating?.idProdus).denumire}
+                        {getProduct(rating?.idProdus)?.denumire}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
