@@ -553,7 +553,7 @@ const Recommended = ({ buget }) => {
       const filteredLast20Preds = last20pPredicted.filter((product, index) => predicted[index])
 
       const finalFormattedProducts = formattedProducts.filter(prods =>
-        filteredLast20Preds.filter(prod => prods.culoare === prod.culoare && prods.id === prod.id).length > 0
+        filteredLast20Preds.filter(prod => prods?.culoare === prod?.culoare && prods.id === prod.id).length > 0
       )
       finalRecommandations = [...finalRecommandations, ...finalFormattedProducts]
 
