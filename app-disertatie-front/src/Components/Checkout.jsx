@@ -558,6 +558,7 @@ const Checkout = () => {
     else return {}
   }
   const vizualizeazaComanda = () => {
+    handleCloseThankYouModal()
     const idComanda = getLastOrder() ? getLastOrder()._id : ''
     navigate(`/comenzilemele/${idComanda}`);
   }

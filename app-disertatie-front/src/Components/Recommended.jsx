@@ -203,7 +203,7 @@ const Recommended = ({ buget }) => {
       produs["culoare"] = sel.substring(24);
       produs["cantitate"] = 1;
 
-      if (auth) {
+      if (auth && carts) {
         const currentUserCart = carts.find(
           (cart) => cart.idUtilizator === auth._id
         );
@@ -224,9 +224,9 @@ const Recommended = ({ buget }) => {
                 produs.culoare !== currentProduct.culoare
             );
             filteredProducts.push(currentProduct);
-            produseToAdd = filteredProducts.map((product) => product);
+            produseToAdd = [...produseToAdd, ...filteredProducts.map((product) => product)];
           } else {
-            produseToAdd = [...produseToAdd, produs];
+            produseToAdd = [...currentUserCart.produse, produs];
           }
 
         }
@@ -245,6 +245,7 @@ const Recommended = ({ buget }) => {
         cartOfUser
       )
     );
+
     setSelected([])
   }
 
@@ -553,7 +554,7 @@ const Recommended = ({ buget }) => {
       const filteredLast20Preds = last20pPredicted.filter((product, index) => predicted[index])
 
       const finalFormattedProducts = formattedProducts.filter(prods =>
-        filteredLast20Preds.filter(prod => prods?.culoare === prod?.culoare && prods.id === prod.id).length > 0
+        filteredLast20Preds.filter(prod => prods?.culoare === prod?.culoare && prods?.id === prod?.id).length > 0
       )
       finalRecommandations = [...finalRecommandations, ...finalFormattedProducts]
 
